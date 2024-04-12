@@ -78,7 +78,7 @@ class Request implements RequestInterface
    */
   public static function __make(): static
   {
-    return Context::get(__CLASS__, Coroutine::getTopId());
+    return Context::get(__CLASS__, Coroutine::getTopId() ?: null);
   }
 
   /**
@@ -305,7 +305,7 @@ class Request implements RequestInterface
    */
   public static function create(?swooleRequest $request = null): static
   {
-    $instance = Context::get(__CLASS__, null, Coroutine::getTopId());
+    $instance = Context::get(__CLASS__, null, Coroutine::getTopId() ?: null);
     if (is_null($instance)) {
       if (is_null($request)) $request = swooleRequest::create();
       $contentType = $request->header['content-type'] ?? null;
@@ -321,7 +321,7 @@ class Request implements RequestInterface
       $requestClass = Request::class;
       if (class_exists('\App\Request')) $requestClass = \App\Request::class;
       $instance = new $requestClass($request);
-      Context::set(__CLASS__, $instance, Coroutine::getTopId());
+      Context::set(__CLASS__, $instance, Coroutine::getTopId() ?: null);
     }
     return $instance;
   }

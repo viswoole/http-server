@@ -178,7 +178,7 @@ class Response implements ResponseInterface
    */
   public static function __make(): ResponseInterface
   {
-    return Context::get(__CLASS__, Coroutine::getTopId());
+    return Context::get(__CLASS__, Coroutine::getTopId() ?: null);
   }
 
   /**
@@ -368,13 +368,13 @@ class Response implements ResponseInterface
    */
   public static function create(?swooleResponse $response = null): ResponseInterface
   {
-    $instance = Context::get(__CLASS__, null, Coroutine::getTopId());
+    $instance = Context::get(__CLASS__, null, Coroutine::getTopId() ?: null);
     if (is_null($instance)) {
       if (is_null($response)) $response = swooleResponse::create();
       $requestClass = Response::class;
       if (class_exists('\App\Response')) $requestClass = \App\Response::class;
       $instance = new $requestClass($response);
-      Context::set(__CLASS__, $instance, Coroutine::getTopId());
+      Context::set(__CLASS__, $instance, Coroutine::getTopId() ?: null);
     }
     return $instance;
   }
