@@ -37,6 +37,9 @@
   "extra": {
     "viswoole": {
       "services": [
+      ],
+      "configs": [
+        "config"
       ]
     }
   }
