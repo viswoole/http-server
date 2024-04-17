@@ -83,13 +83,13 @@ interface ResponseInterface extends \Psr\Http\Message\ResponseInterface
    * @access public
    * @param string $errMsg 错误提示信息
    * @param int $errCode 错误码
-   * @param array|null $data 响应数据
+   * @param array|JsonSerializable|null $data 响应数据
    * @return static
    */
   public function error(
-    string $errMsg = 'error',
-    int    $errCode = -1,
-    array  $data = null
+    string                 $errMsg = 'error',
+    int                    $errCode = -1,
+    array|JsonSerializable $data = null
   ): ResponseInterface;
 
   /**
@@ -98,23 +98,40 @@ interface ResponseInterface extends \Psr\Http\Message\ResponseInterface
    * @param string $errMsg 错误提示信息
    * @param int $errCode 错误码
    * @param int $statusCode 状态码
-   * @param array|null $errTrace 额外数据
+   * @param array|JsonSerializable|null $errTrace 额外数据
    * @return static
    */
   public function exception(
-    string $errMsg = '系统内部错误',
-    int    $errCode = 500,
-    int    $statusCode = 500,
-    array  $errTrace = null
+    string                 $errMsg = '系统内部错误',
+    int                    $errCode = 500,
+    int                    $statusCode = 500,
+    array|JsonSerializable $errTrace = null
   ): ResponseInterface;
 
   /**
-   * 标准json响应
+   * 统一json响应格式
+   *
+   * @access public
+   * @param string $errMsg 错误信息
+   * @param int $errCode 错误码
+   * @param array|JsonSerializable|null $data 数据
+   * @param int $statusCode 状态码
+   * @return ResponseInterface
+   */
+  public function unifiedJson(
+    string                      $errMsg,
+    int                         $errCode,
+    array|JsonSerializable|null $data,
+    int                         $statusCode
+  ): ResponseInterface;
+
+  /**
+   * 任意格式的json响应
    *
    * @access public
    * @param array|JsonSerializable $data
    * @param int $statusCode
-   * @return static
+   * @return ResponseInterface
    */
   public function json(array|JsonSerializable $data, int $statusCode = 200): ResponseInterface;
 
@@ -122,11 +139,14 @@ interface ResponseInterface extends \Psr\Http\Message\ResponseInterface
    * 标准成功响应格式
    *
    * @access public
-   * @param string|array $errMsg 提示信息,如果传入数组则做为响应数据默认提示信息为success
-   * @param array|null $data 响应数据
+   * @param array|JsonSerializable|null $data 响应数据
+   * @param string $errMsg 提示信息,如果传入数组则做为响应数据默认提示信息为success
    * @return ResponseInterface
    */
-  public function success(string|array $errMsg = 'success', array $data = null): ResponseInterface;
+  public function success(
+    string                 $errMsg = 'success',
+    array|JsonSerializable $data = null,
+  ): ResponseInterface;
 
   /**
    * 检索所有消息头的值。

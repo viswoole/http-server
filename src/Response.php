@@ -18,6 +18,7 @@ namespace ViSwoole\HttpServer;
 use BadMethodCallException;
 use InvalidArgumentException;
 use JsonSerializable;
+use Override;
 use Psr\Http\Message\StreamInterface;
 use Swoole\Http\Response as swooleResponse;
 use ViSwoole\Core\Console\Output;
@@ -94,7 +95,10 @@ class Response implements ResponseInterface
    * @param array|string|null $value 标头值
    * @return ResponseInterface
    */
-  public function setHeader(array|string $name, array|string|null $value = null): ResponseInterface
+  #[Override] public function setHeader(
+    array|string      $name,
+    array|string|null $value = null
+  ): ResponseInterface
   {
     if (is_array($name)) {
       foreach ($name as $headerName => $headerValue) {
@@ -122,7 +126,7 @@ class Response implements ResponseInterface
    * @return bool 如果任何标头名称与给定的标头名称使用不区分大小写的字符串比较匹配，则返回 true。
    * 如果消息中没有找到匹配的标头名称，则返回 false。
    */
-  public function hasHeader(string $name): bool
+  #[Override] public function hasHeader(string $name): bool
   {
     $lowercaseArray = array_change_key_case($this->headers);
     return array_key_exists(strtolower($name), $lowercaseArray);
@@ -142,7 +146,7 @@ class Response implements ResponseInterface
    * @return string 作为给定标头的所有字符串值的逗号拼接字符串。
    * 如果消息中没有该标头，则此方法必须返回一个空字符串。
    */
-  public function getHeaderLine(string $name): string
+  #[Override] public function getHeaderLine(string $name): string
   {
     return Header::getHeader($name, $this->headers, 'string');
   }
@@ -157,7 +161,7 @@ class Response implements ResponseInterface
    * @param string $name 不区分大小写的标头字段名称。
    * @return string[] 作为给定标头的所有字符串值的数组。如果消息中没有该标头，则此方法必须返回一个空数组。
    */
-  public function getHeader(string $name): array
+  #[Override] public function getHeader(string $name): array
   {
     return Header::getHeader($name, $this->headers);
   }
@@ -167,7 +171,7 @@ class Response implements ResponseInterface
    *
    * @return string HTTP 版本号（例如，"1.1"，"1.0"）。
    */
-  public function getProtocolVersion(): string
+  #[Override] public function getProtocolVersion(): string
   {
     return $this->protocolVersion;
   }
@@ -188,7 +192,7 @@ class Response implements ResponseInterface
    * @param string $version HTTP 版本号（例如，"1.1"，"1.0"）。
    * @return ResponseInterface
    */
-  public function withProtocolVersion(string $version): ResponseInterface
+  #[Override] public function withProtocolVersion(string $version): ResponseInterface
   {
     $this->protocolVersion = $version;
     return $this;
@@ -202,7 +206,7 @@ class Response implements ResponseInterface
    * @access public
    * @return array 所有标头。
    */
-  public function getHeaderLines(): array
+  #[Override] public function getHeaderLines(): array
   {
     return Header::getHeaders($this->headers, 'string', 'title');
   }
@@ -212,7 +216,7 @@ class Response implements ResponseInterface
    *
    * @return string[][] 返回消息标头的关联数组。
    */
-  public function getHeaders(): array
+  #[Override] public function getHeaders(): array
   {
     return Header::getHeaders($this->headers, 'array', 'title');
   }
@@ -227,7 +231,7 @@ class Response implements ResponseInterface
    * @return ResponseInterface
    * @throws InvalidArgumentException 对于无效的标头名称或值。
    */
-  public function withAddedHeader(string $name, $value): ResponseInterface
+  #[Override] public function withAddedHeader(string $name, $value): ResponseInterface
   {
     Header::validate($name, $value);
     $newName = Header::hasHeader($name, $this->headers);
@@ -254,7 +258,7 @@ class Response implements ResponseInterface
    * @param string $name 不区分大小写的标头字段名称要删除。
    * @return ResponseInterface
    */
-  public function withoutHeader(string $name): ResponseInterface
+  #[Override] public function withoutHeader(string $name): ResponseInterface
   {
     $name = Header::hasHeader($name, $this->headers);
     if (false !== $name) {
@@ -274,7 +278,7 @@ class Response implements ResponseInterface
    * @return ResponseInterface
    * @throws InvalidArgumentException 当主体无效时。
    */
-  public function withBody(StreamInterface $body): ResponseInterface
+  #[Override] public function withBody(StreamInterface $body): ResponseInterface
   {
     $this->stream = $body;
     return $this;
@@ -287,7 +291,7 @@ class Response implements ResponseInterface
    *
    * @return int 状态代码。
    */
-  public function getStatusCode(): int
+  #[Override] public function getStatusCode(): int
   {
     return $this->statusCode;
   }
@@ -299,7 +303,7 @@ class Response implements ResponseInterface
    * @param int $http_code 302|301
    * @return bool
    */
-  public function redirect(string $uri, int $http_code = 302): bool
+  #[Override] public function redirect(string $uri, int $http_code = 302): bool
   {
     return $this->getSwooleResponse()->redirect($uri, $http_code);
   }
@@ -310,7 +314,7 @@ class Response implements ResponseInterface
    * @access public
    * @return swooleResponse
    */
-  public function getSwooleResponse(): swooleResponse
+  #[Override] public function getSwooleResponse(): swooleResponse
   {
     return $this->swooleResponse;
   }
@@ -322,7 +326,7 @@ class Response implements ResponseInterface
    * @param string|null $content
    * @return bool
    */
-  public function send(?string $content = null): bool
+  #[Override] public function send(?string $content = null): bool
   {
     if ($this->getSwooleResponse()->isWritable()) {
       foreach ($this->headers as $k => $v) {
@@ -353,7 +357,7 @@ class Response implements ResponseInterface
    *
    * @return StreamInterface 以流形式返回主体。
    */
-  public function getBody(): StreamInterface
+  #[Override] public function getBody(): StreamInterface
   {
     if (!isset($this->stream)) {
       $this->stream = FileStream::create('php://memory', 'r+');
@@ -390,7 +394,7 @@ class Response implements ResponseInterface
    * @return ResponseInterface
    * @throws InvalidArgumentException 对于无效的标头名称或值。
    */
-  public function withHeader(string $name, $value): ResponseInterface
+  #[Override] public function withHeader(string $name, $value): ResponseInterface
   {
     Header::validate($name, $value);
     $newName = Header::hasHeader($name, $this->headers);
@@ -400,37 +404,38 @@ class Response implements ResponseInterface
   }
 
   /**
-   * 标准错误响应格式
-   *
-   * @access public
-   * @param string $errMsg 提示信息array|object为data
-   * @param int $errCode 业务错误码
-   * @param array|null $data 响应数据
-   * @return ResponseInterface
+   * @inheritDoc
    */
-  public function error(
-    string $errMsg = 'error',
-    int    $errCode = -1,
-    array  $data = null
+  #[Override] public function error(
+    string                 $errMsg = 'error',
+    int                    $errCode = -1,
+    array|JsonSerializable $data = null
   ): ResponseInterface
   {
-    $res = [
-      'errCode' => $errCode,
-      'errMsg' => $errMsg,
-      'data' => $data
-    ];
-    return $this->json($res);
+    return $this->unifiedJson($errMsg, $errCode, $data, 200);
   }
 
   /**
-   * json响应
-   *
-   * @access public
-   * @param JsonSerializable|array $data
-   * @param int $statusCode
-   * @return ResponseInterface
+   * @inheritDoc
    */
-  public function json(JsonSerializable|array $data, int $statusCode = 200): ResponseInterface
+  #[Override] public function unifiedJson(
+    string                      $errMsg,
+    int                         $errCode,
+    array|JsonSerializable|null $data,
+    int                         $statusCode
+  ): ResponseInterface
+  {
+    $this->json(compact('errCode', 'errMsg', 'data'), $statusCode);
+    return $this;
+  }
+
+  /**
+   * @inheritDoc
+   */
+  #[Override] public function json(
+    JsonSerializable|array $data,
+    int                    $statusCode = 200
+  ): ResponseInterface
   {
     $this->headers['Content-Type'] = 'application/json; charset=utf-8';
     $this->setContent(json_encode($data, $this->jsonFlags));
@@ -445,7 +450,7 @@ class Response implements ResponseInterface
    * @param string $content
    * @return ResponseInterface
    */
-  public function setContent(string $content): ResponseInterface
+  #[Override] public function setContent(string $content): ResponseInterface
   {
     $this->getBody()->seek(0);
     $this->getBody()->write($content);
@@ -460,7 +465,9 @@ class Response implements ResponseInterface
    * @param string $charset 输出编码 默认utf-8
    * @return ResponseInterface
    */
-  public function setContentType(string $contentType = 'application/json', string $charset = 'utf-8'
+  #[Override] public function setContentType(
+    string $contentType = 'application/json',
+    string $charset = 'utf-8'
   ): ResponseInterface
   {
     return $this->setHeader('Content-Type', "$contentType; charset=$charset");
@@ -473,7 +480,7 @@ class Response implements ResponseInterface
    * @param string $content
    * @return ResponseInterface
    */
-  public function setMessage(string $content): ResponseInterface
+  #[Override] public function setMessage(string $content): ResponseInterface
   {
     return $this->setContent($content);
   }
@@ -484,68 +491,40 @@ class Response implements ResponseInterface
    * @param bool $echo
    * @return ResponseInterface
    */
-  public function echoConsole(bool $echo = true): ResponseInterface
+  #[Override] public function echoConsole(bool $echo = true): ResponseInterface
   {
     $this->messageEchoToConsole = $echo;
     return $this;
   }
 
   /**
-   * 标准的系统异常响应
-   *
-   * @param string $errMsg 错误提示信息
-   * @param int $errCode 业务错误码
-   * @param int $statusCode http状态码
-   * @param array|null $errTrace
-   * @return ResponseInterface
+   * @inheritDoc
    */
   public function exception(
-    string $errMsg = '系统内部异常',
-    int    $errCode = 500,
-    int    $statusCode = 500,
-    array  $errTrace = null
+    string                 $errMsg = '系统内部异常',
+    int                    $errCode = 500,
+    int                    $statusCode = 500,
+    array|JsonSerializable $errTrace = null
   ): ResponseInterface
   {
-    $res = [
-      'errCode' => $errCode,
-      'errMsg' => $errMsg,
-      'data' => $errTrace
-    ];
-    return $this->json($res, $statusCode);
+    return $this->unifiedJson($errMsg, $errCode, $errTrace, $statusCode);
   }
 
   /**
-   * 标准成功响应格式
-   *
-   * @access public
-   * @param string|array $errMsg 提示信息,如果传入数组则做为响应数据默认提示信息为success
-   * @param array|null $data 响应数据
-   * @return ResponseInterface
+   * @inheritDoc
    */
-  public function success(string|array $errMsg = 'success', array $data = null): ResponseInterface
+  #[Override] public function success(
+    string                 $errMsg = 'success',
+    array|JsonSerializable $data = null
+  ): ResponseInterface
   {
-    if (is_array($errMsg)) {
-      $data = $errMsg;
-      $errMsg = 'success';
-    }
-    $res = [
-      'errCode' => 0,
-      'errMsg' => (string)$errMsg,
-      'data' => $data
-    ];
-    return $this->json($res);
+    return $this->unifiedJson($errMsg, 0, $data, 200);
   }
 
   /**
-   * 发送文件
-   *
-   * @param string $filePath 要发送的文件名称
-   * @param int $offset 上传文件的偏移量
-   * @param int $length 发送数据的尺寸
-   * @param string|null $fileMimeType 文件类型
-   * @return bool
+   * @inheritDoc
    */
-  public function sendfile(
+  #[Override] public function sendfile(
     string $filePath, int $offset = 0, int $length = 0, ?string $fileMimeType = null
   ): bool
   {
@@ -559,29 +538,21 @@ class Response implements ResponseInterface
   }
 
   /**
-   * 设置HTTP状态 static::withStatus() 方法别名
-   *
-   * @access public
-   * @param int $statusCode 状态码
-   * @param string $reasonPhrase 状态描述短语
-   * @return ResponseInterface
+   * @inheritDoc
    */
-  public function setCode(int $statusCode, string $reasonPhrase = ''): ResponseInterface
+  #[Override] public function setCode(int $statusCode, string $reasonPhrase = ''): ResponseInterface
   {
     return $this->withStatus($statusCode, $reasonPhrase);
   }
 
   /**
-   * 返回具有指定状态代码和（可选）原因短语的实例。
+   * 应用状态码
    *
-   * 如果没有指定原因短语，实现可以选择将响应状态代码的 RFC 7231 或 IANA 推荐原因短语作为默认值。
-   *
-   * @param int $code 要设置的 3 位整数结果代码。
-   * @param string $reasonPhrase 与提供的状态代码一起使用的原因短语；如果未提供，则实现可以使用 HTTP 规范中建议的默认值。
+   * @param int $code 状态码
+   * @param string $reasonPhrase 状态描述短语
    * @return ResponseInterface
-   * @throws InvalidArgumentException 对于无效的状态代码参数。
    */
-  public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
+  #[Override] public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
   {
     // 检查状态码是否有效
     if ($code < 100 || $code >= 600) {
@@ -598,14 +569,9 @@ class Response implements ResponseInterface
   }
 
   /**
-   * 获取与状态代码相关联的响应原因短语。
-   *
-   * 由于响应状态行中的原因短语不是必需元素，原因短语值可以为 null。实现可以选择返回响应状态代码的 RFC 7231 推荐原因短语
-   * （或 IANA HTTP 状态码注册中的原因短语列表）作为默认值。
-   *
-   * @return string 原因短语；如果没有则必须返回一个空字符串。
+   * @inheritDoc
    */
-  public function getReasonPhrase(): string
+  #[Override] public function getReasonPhrase(): string
   {
     return $this->reasonPhrase;
   }
@@ -627,21 +593,9 @@ class Response implements ResponseInterface
   }
 
   /**
-   * 设置Cookie信息
-   *
-   * @access public
-   * @param string $key
-   * @param string $value
-   * @param int $expire 过期时间
-   * @param string $path 存储路径
-   * @param string $domain 域名
-   * @param bool $secure 是否通过安全的 HTTPS 连接来传输 Cookie
-   * @param bool $httponly 是否允许浏览器的JavaScript访问带有 HttpOnly 属性的 Cookie
-   * @param string $samesite 限制第三方 Cookie，从而减少安全风险
-   * @param string $priority Cookie优先级，当Cookie数量超过规定，低优先级的会先被删除
-   * @return bool
+   * @inheritDoc
    */
-  public function setCookie(
+  #[Override] public function setCookie(
     string $key,
     string $value = '',
     int    $expire = 0,
@@ -667,22 +621,9 @@ class Response implements ResponseInterface
   }
 
   /**
-   * rawCookie() 的参数和上文的 setCookie() 一致，只不过不进行编码处理
-   *
-   * @access public
-   * @param string $key
-   * @param string $value
-   * @param int $expire
-   * @param string $path
-   * @param string $domain
-   * @param bool $secure
-   * @param bool $httponly
-   * @param string $samesite
-   * @param string $priority
-   * @return bool
-   * @see static::setCookie()
+   * @inheritDoc
    */
-  public function rawCookie(
+  #[Override] public function rawCookie(
     string $key,
     string $value = '',
     int    $expire = 0,
