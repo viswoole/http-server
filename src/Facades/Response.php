@@ -24,6 +24,7 @@ use ViSwoole\HttpServer\Contract\ResponseInterface;
 /**
  * HTTP响应类
  *
+ * @method static ResponseInterface create(?\Swoole\Http\Response $request = null) 创建Response对象
  * @method static ResponseInterface setHeader(array|string $name, array|string|null $value = null) 设置响应头(可批量设置)
  * @method static bool hasHeader(string $name) 检查是否存在给定不区分大小写名称的标头。
  * @method static string getHeaderLine(string $name) 通过给定不区分大小写的名称检索标头的值，这些值以逗号分隔的字符串形式返回。
