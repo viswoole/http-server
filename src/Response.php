@@ -531,7 +531,7 @@ class Response implements ResponseInterface
     ?string $fileMimeType = null
   ): bool
   {
-    if (is_null($fileMimeType)) {
+    if (empty($fileMimeType)) {
       $finfo = finfo_open(FILEINFO_MIME_TYPE);
       $fileMimeType = finfo_file($finfo, $filePath);
       finfo_close($finfo);
