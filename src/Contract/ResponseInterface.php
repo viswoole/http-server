@@ -15,6 +15,7 @@ declare (strict_types=1);
 
 namespace ViSwoole\HttpServer\Contract;
 
+use JsonSerializable;
 use Swoole\Http\Response as swooleResponse;
 
 interface ResponseInterface extends \Psr\Http\Message\ResponseInterface
@@ -111,11 +112,11 @@ interface ResponseInterface extends \Psr\Http\Message\ResponseInterface
    * 标准json响应
    *
    * @access public
-   * @param array|object $data
+   * @param array|JsonSerializable $data
    * @param int $statusCode
    * @return static
    */
-  public function json(array|object $data, int $statusCode = 200): ResponseInterface;
+  public function json(array|JsonSerializable $data, int $statusCode = 200): ResponseInterface;
 
   /**
    * 标准成功响应格式

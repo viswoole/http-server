@@ -17,6 +17,7 @@ namespace ViSwoole\HttpServer;
 
 use BadMethodCallException;
 use InvalidArgumentException;
+use JsonSerializable;
 use Psr\Http\Message\StreamInterface;
 use Swoole\Http\Response as swooleResponse;
 use ViSwoole\Core\Console\Output;
@@ -380,20 +381,6 @@ class Response implements ResponseInterface
   }
 
   /**
-   * 设置Content-Type响应头
-   *
-   * @access public
-   * @param string $contentType 输出类型 默认application/json
-   * @param string $charset 输出编码 默认utf-8
-   * @return ResponseInterface
-   */
-  public function setContentType(string $contentType = 'application/json', string $charset = 'utf-8'
-  ): ResponseInterface
-  {
-    return $this->setHeader('Content-Type', "$contentType; charset=$charset");
-  }
-
-  /**
    * 返回一个具有指定值，替换指定标头的实例。
    *
    * 虽然标头名称不区分大小写，但此函数会保留标头的大小写，并从 getHeaders() 返回。
@@ -439,11 +426,11 @@ class Response implements ResponseInterface
    * json响应
    *
    * @access public
-   * @param array|object $data
+   * @param JsonSerializable|array $data
    * @param int $statusCode
    * @return ResponseInterface
    */
-  public function json(object|array $data, int $statusCode = 200): ResponseInterface
+  public function json(JsonSerializable|array $data, int $statusCode = 200): ResponseInterface
   {
     $this->headers['Content-Type'] = 'application/json; charset=utf-8';
     $this->setContent(json_encode($data, $this->jsonFlags));
@@ -463,6 +450,20 @@ class Response implements ResponseInterface
     $this->getBody()->seek(0);
     $this->getBody()->write($content);
     return $this;
+  }
+
+  /**
+   * 设置Content-Type响应头
+   *
+   * @access public
+   * @param string $contentType 输出类型 默认application/json
+   * @param string $charset 输出编码 默认utf-8
+   * @return ResponseInterface
+   */
+  public function setContentType(string $contentType = 'application/json', string $charset = 'utf-8'
+  ): ResponseInterface
+  {
+    return $this->setHeader('Content-Type', "$contentType; charset=$charset");
   }
 
   /**
@@ -508,7 +509,7 @@ class Response implements ResponseInterface
     $res = [
       'errCode' => $errCode,
       'errMsg' => $errMsg,
-      'errTrace' => $errTrace
+      'data' => $errTrace
     ];
     return $this->json($res, $statusCode);
   }
