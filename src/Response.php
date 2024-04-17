@@ -525,7 +525,10 @@ class Response implements ResponseInterface
    * @inheritDoc
    */
   #[Override] public function sendfile(
-    string $filePath, int $offset = 0, int $length = 0, ?string $fileMimeType = null
+    string  $filePath,
+    int     $offset = 0,
+    int     $length = 0,
+    ?string $fileMimeType = null
   ): bool
   {
     if (is_null($fileMimeType)) {
@@ -534,7 +537,7 @@ class Response implements ResponseInterface
       finfo_close($finfo);
     }
     $this->swooleResponse->header('Content-Type', $fileMimeType);
-    return $this->swooleResponse->sendfile($filePath);
+    return $this->swooleResponse->sendfile($filePath, $offset, $length);
   }
 
   /**
