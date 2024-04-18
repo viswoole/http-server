@@ -45,13 +45,19 @@ interface RequestInterface extends ServerRequestInterface
   public function getParams(string|array|null $rule = null, bool $isShowNull = true): array;
 
   /**
-   * 获取请求参数
-   * @param string|null $key
-   * @param mixed $default
-   * @param string|null $filter
+   * 获取请求参数，自动判断get或post
+   *
+   * @access public
+   * @param string|null $key 字段，不传则获取全部
+   * @param mixed $default 默认值
+   * @param string|array|null $filter 过滤器
    * @return mixed
    */
-  public function param(?string $key = null, mixed $default = null, string $filter = null): mixed;
+  public function param(
+    ?string      $key = null,
+    mixed        $default = null,
+    string|array $filter = null
+  ): mixed;
 
   /**
    * 获取post参数

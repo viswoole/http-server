@@ -161,11 +161,7 @@ class Request implements RequestInterface
   }
 
   /**
-   * 获取请求参数
-   * @param string|null $key
-   * @param mixed $default
-   * @param string|array|null $filter
-   * @return mixed
+   * @inheritDoc
    */
   public function param(
     ?string      $key = null,

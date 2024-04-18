@@ -60,8 +60,8 @@ use ViSwoole\HttpServer\Contract\RequestInterface;
  * @method static StreamInterface getBody() 获取消息的主体。
  * @method static RequestInterface withBody(StreamInterface $body) 返回具有指定消息主体的实例。
  * @method static string ip() 获取客户端ip
- * @method static array getParams(array|string|null $rule, bool $isShowNull) 批量获取请求参数
- * @method static mixed param(?string $key, mixed $default, string $filter = null) 获取请求参数
+ * @method static array getParams(array|string|null $rule, bool $isShowNull) 批量获取请求参数，自动判断get或post
+ * @method static mixed param(?string $key, mixed $default, string|array $filter = null) 获取请求参数，自动判断get或post
  * @method static string getMethod() 检索请求的 HTTP 方法。
  * @method static mixed post(?string $key, mixed $default) 获取post参数
  * @method static string filter(string $data, array|string $filter) 过滤
