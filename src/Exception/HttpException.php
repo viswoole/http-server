@@ -34,10 +34,10 @@ class HttpException extends RuntimeException
 
   public function __construct(
     string    $message = 'error',
+    int       $code = -1,
     int       $httpCode = 200,
     Throwable $previous = null,
     array     $headers = [],
-    int       $code = -1
   )
   {
     $this->httpCode = $httpCode;
