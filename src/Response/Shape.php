@@ -22,12 +22,12 @@ abstract class Shape
 {
   /**
    * @param Type $contentType 响应类型
-   * @param mixed $data 响应数据
+   * @param mixed $content 响应内容
    * @param int $statusCode 响应状态码
    */
   public function __construct(
     protected Type  $contentType,
-    protected mixed $data,
+    protected mixed $content,
     protected int   $statusCode = 200
   )
   {
@@ -46,11 +46,12 @@ abstract class Shape
   /**
    * 获取数据
    *
+   * @access public
    * @return mixed
    */
-  public function getData(): mixed
+  public function getContent(): mixed
   {
-    return $this->data;
+    return $this->content;
   }
 
   /**

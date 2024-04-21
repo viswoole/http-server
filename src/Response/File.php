@@ -42,6 +42,6 @@ class File extends Shape
    */
   #[Override] public function getContentType(): string
   {
-    return $this->data['fileMimeType'];
+    return $this->content['fileMimeType'];
   }
 }

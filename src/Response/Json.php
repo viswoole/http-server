@@ -23,7 +23,6 @@ use Override;
  */
 class Json extends Shape implements JsonSerializable
 {
-
   public function __construct(mixed $data, int $statusCode = 200)
   {
     parent::__construct(Type::JSON, $data, $statusCode);
@@ -34,6 +33,6 @@ class Json extends Shape implements JsonSerializable
    */
   #[Override] public function jsonSerialize(): mixed
   {
-    return $this->data;
+    return $this->getContent();
   }
 }
