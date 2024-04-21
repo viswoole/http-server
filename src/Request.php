@@ -187,7 +187,8 @@ class Request implements RequestInterface
    */
   public function getMethod(): string
   {
-    return $this->swooleRequest->getMethod() ?? '';
+    $method = $this->swooleRequest->getMethod();
+    return $method ?: '';
   }
 
   /**
