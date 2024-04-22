@@ -16,7 +16,6 @@ declare (strict_types=1);
 namespace ViSwoole\HttpServer;
 
 use Override;
-use Swoole\Server;
 use ViSwoole\Core\Facades\Event;
 use ViSwoole\Core\ServiceProvider;
 use ViSwoole\HttpServer\Router\Router;
@@ -29,8 +28,9 @@ class RouterService extends ServiceProvider
    */
   #[Override] public function boot(): void
   {
-    Event::on('serverRun', function (Server $server) {
-      var_dump('服务启动了', \ViSwoole\Core\Facades\Server::getName());
+    // 服务启动，创建路由
+    Event::on('ServerStart', function () {
+      Router::factory();
     });
   }
 
