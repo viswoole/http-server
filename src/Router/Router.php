@@ -34,7 +34,7 @@ class Router
    */
   protected array $serverRouteCollector = [];
 
-  public function __construct()
+  private function __construct()
   {
     $this->loadConfigRoute();
     $this->loadAnnotationRoute();
