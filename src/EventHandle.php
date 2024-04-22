@@ -42,4 +42,9 @@ class EventHandle
     }
     return true;
   }
+
+  public static function onStart()
+  {
+
+  }
 }
