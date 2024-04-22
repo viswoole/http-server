@@ -31,9 +31,9 @@ use ViSwoole\HttpServer\Router\Router;
  * @method static RouteItem patch(string|array $rule, string|array|Closure $handler) 定义PATCH方式访问
  * @method static RouteItem head(string|array $rule, string|array|Closure $handler) 定义HEAD方式访问
  * @method static RouteItem any(string|array $rule, string|array|Closure $handler) 定义任意方式访问
- * @method static RouteItem add(string|array $rule, string|array|Closure $handler, RequestMethod|array $method = null) 添加路由
+ * @method static RouteItem add(string|array $rule, string|array|Closure $handler, Method|array $method = null) 添加路由
  * @method static RouteGroup group(string|array|Closure $name, ?Closure $closure = null) 定义分组路由
- * @method static void miss(Closure $handler, RequestMethod|array $method = RequestMethod::ANY) 定义miss路由
+ * @method static void miss(Closure $handler, Method|array $method = Method::ANY) 定义miss路由
  */
 class Route
 {

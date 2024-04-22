@@ -19,7 +19,7 @@ use ArrayAccess;
 use InvalidArgumentException;
 use Override;
 use RuntimeException;
-use ViSwoole\HttpServer\RequestMethod;
+use ViSwoole\HttpServer\Method;
 
 /**
  * 路线配置类
@@ -169,10 +169,10 @@ abstract class RouteAbstract implements ArrayAccess
   /**
    * 请求方法
    *
-   * @param RequestMethod|RequestMethod[] $method
+   * @param Method|Method[] $method
    * @return static
    */
-  public function method(RequestMethod|array $method = RequestMethod::ANY): static
+  public function method(Method|array $method = Method::ANY): static
   {
     if (is_array($method)) {
       foreach ($method as $roureMethod) {

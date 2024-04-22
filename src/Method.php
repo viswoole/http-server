@@ -17,7 +17,7 @@ namespace ViSwoole\HttpServer;
 /**
  * http协议请求方法
  */
-enum RequestMethod
+enum Method
 {
   case POST;
   case GET;

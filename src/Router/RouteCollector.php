@@ -19,7 +19,7 @@ use BadMethodCallException;
 use Closure;
 use ViSwoole\HttpServer\Contract\RequestInterface;
 use ViSwoole\HttpServer\Exception\RouteNotFoundException;
-use ViSwoole\HttpServer\RequestMethod;
+use ViSwoole\HttpServer\Method;
 
 /**
  * 路由收集器
@@ -75,12 +75,12 @@ class RouteCollector
    * miss路由（在未匹配到路由的时候输出）
    * @access public
    * @param Closure $handler
-   * @param RequestMethod|RequestMethod[] $method
+   * @param Method|Method[] $method
    * @return void
    */
   public function miss(
-    Closure             $handler,
-    RequestMethod|array $method = RequestMethod::ANY
+    Closure      $handler,
+    Method|array $method = Method::ANY
   ): void
   {
     if (!is_array($method)) $method = [$method];
@@ -101,7 +101,7 @@ class RouteCollector
     if (in_array($name, $method)) {
       if ($name !== 'add') {
         $name = strtoupper($name);
-        $arguments[] = RequestMethod::{$name};
+        $arguments[] = Method::{$name};
       }
       return $this->addRoute(...$arguments);
     } else {
@@ -114,13 +114,13 @@ class RouteCollector
    * 自定义路由
    * @param string|array $paths 匹配规则user/{id:string}
    * @param string|array|Closure $handler 路由地址
-   * @param RequestMethod|RequestMethod[] $method 请求类型可传数组定义多个
+   * @param Method|Method[] $method 请求类型可传数组定义多个
    * @return RouteAbstract
    */
   public function addRoute(
     string|array         $paths,
     string|array|Closure $handler,
-    RequestMethod|array  $method = null,
+    Method|array         $method = null,
   ): RouteAbstract
   {
     $route = new RouteItem(

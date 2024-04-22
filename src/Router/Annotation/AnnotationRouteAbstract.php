@@ -15,20 +15,20 @@ declare (strict_types=1);
 
 namespace ViSwoole\HttpServer\Router\Annotation;
 
-use ViSwoole\HttpServer\RequestMethod;
+use ViSwoole\HttpServer\Method;
 
 abstract class AnnotationRouteAbstract
 {
   /**
    * @param string|string[]|null $paths null则为当前方法名
-   * @param RequestMethod|array $methods
+   * @param Method|array $methods
    * @param string|null $server 服务器
    * @param array $options
    */
   public function __construct(
-    public string|array|null   $paths = null,
-    public RequestMethod|array $methods = [RequestMethod::GET, RequestMethod::POST],
-    public array               $options = []
+    public string|array|null $paths = null,
+    public Method|array      $methods = [Method::GET, Method::POST],
+    public array             $options = []
   )
   {
     $this->options['methods'] = $this->methods;
