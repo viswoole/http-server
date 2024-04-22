@@ -19,7 +19,6 @@ use Closure;
 use ViSwoole\Core\Facades\Server;
 use ViSwoole\HttpServer\Router\RouteGroup;
 use ViSwoole\HttpServer\Router\RouteItem;
-use ViSwoole\HttpServer\Router\Router;
 
 /**
  * 路由定义类

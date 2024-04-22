@@ -18,7 +18,6 @@ namespace ViSwoole\HttpServer;
 use Override;
 use ViSwoole\Core\Facades\Event;
 use ViSwoole\Core\ServiceProvider;
-use ViSwoole\HttpServer\Router\Router;
 
 class RouterService extends ServiceProvider
 {

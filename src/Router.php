@@ -13,22 +13,26 @@
 
 declare (strict_types=1);
 
-namespace ViSwoole\HttpServer\Router;
+namespace ViSwoole\HttpServer;
 
 use ReflectionClass;
 use ReflectionMethod;
+use ViSwoole\Core\Console\Output;
 use ViSwoole\Core\Event;
 use ViSwoole\Core\Facades\Server;
 use ViSwoole\HttpServer\Router\Annotation\AnnotationRouteAbstract;
 use ViSwoole\HttpServer\Router\Annotation\AutoRouteController;
 use ViSwoole\HttpServer\Router\Annotation\RouteController;
 use ViSwoole\HttpServer\Router\Annotation\RouteMapping;
+use ViSwoole\HttpServer\Router\RouteCollector;
+use ViSwoole\HttpServer\Router\RouteItem;
 
 /**
  * 路由管理器
  */
 class Router
 {
+  private static Router $instance;
   /**
    * @var RouteCollector[] 服务路由器实例
    */
@@ -36,6 +40,7 @@ class Router
 
   private function __construct()
   {
+    self::$instance = $this;
     $this->loadConfigRoute();
     $this->loadAnnotationRoute();
     $this->parseRoute();
@@ -202,6 +207,7 @@ class Router
     foreach ($this->serverRouteCollector as $collector) {
       $collector->parseRoute();
     }
+    Output::echo('http 路由服务已准备就绪', 'NOTICE', 0);
     Event::factory()->emit('RouteLoaded');
   }
 
@@ -210,9 +216,8 @@ class Router
    */
   public static function factory(): static
   {
-    static $instance = null;
-    if ($instance === null) $instance = new static();
-    return $instance;
+    if (!isset(self::$instance)) self::$instance = new static();
+    return self::$instance;
   }
 
   /**
