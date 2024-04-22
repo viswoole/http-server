@@ -13,20 +13,18 @@
 
 declare (strict_types=1);
 
-namespace ViSwoole\HttpServer\Exception;
+namespace ViSwoole\HttpServer\Router;
 
-use Throwable;
+use Closure;
 
 /**
- * 路由不存在异常
+ * 路由未匹配处理
  */
-class RouteNotFoundException extends HttpException
+readonly class RouteMiss
 {
   public function __construct(
-    string    $message = 'routing resource not found',
-    Throwable $previous = null
+    public Closure $handler
   )
   {
-    parent::__construct(message: $message, code: 404, httpCode: 404, previous: $previous);
   }
 }

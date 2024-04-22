@@ -13,20 +13,24 @@
 
 declare (strict_types=1);
 
-namespace ViSwoole\HttpServer\Exception;
+namespace ViSwoole\HttpServer\Router\Annotation;
 
-use Throwable;
+use ViSwoole\HttpServer\RequestMethod;
 
-/**
- * 路由不存在异常
- */
-class RouteNotFoundException extends HttpException
+abstract class AnnotationRouteAbstract
 {
+  /**
+   * @param string|string[]|null $paths null则为当前方法名
+   * @param RequestMethod|array $methods
+   * @param string|null $server 服务器
+   * @param array $options
+   */
   public function __construct(
-    string    $message = 'routing resource not found',
-    Throwable $previous = null
+    public string|array|null   $paths = null,
+    public RequestMethod|array $methods = [RequestMethod::GET, RequestMethod::POST],
+    public array               $options = []
   )
   {
-    parent::__construct(message: $message, code: 404, httpCode: 404, previous: $previous);
+    $this->options['methods'] = $this->methods;
   }
 }

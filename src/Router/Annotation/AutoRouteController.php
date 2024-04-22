@@ -13,9 +13,15 @@
 
 declare (strict_types=1);
 
-namespace ViSwoole\HttpServer;
+namespace ViSwoole\HttpServer\Router\Annotation;
 
-class Router
+use Attribute;
+use ViSwoole\HttpServer\Router\RouteCollector;
+
+/**
+ * 自动注册控制器下所有public方法
+ */
+#[Attribute(Attribute::TARGET_CLASS)]
+class AutoRouteController extends RouteCollector
 {
-
 }
