@@ -22,7 +22,6 @@ use ViSwoole\HttpServer\Contract\ResponseInterface;
 
 class HttpService extends ServiceProvider
 {
-
   /**
    * @inheritDoc
    */
@@ -37,7 +36,7 @@ class HttpService extends ServiceProvider
   {
     $this->app->bind(RequestInterface::class, Request::class);
     $this->app->bind(ResponseInterface::class, Response::class);
-    $this->app->addExclude(Request::class);
-    $this->app->addExclude(Response::class);
+    $this->app->addExclude(RequestInterface::class);
+    $this->app->addExclude(ResponseInterface::class);
   }
 }
