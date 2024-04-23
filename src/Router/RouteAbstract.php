@@ -16,10 +16,12 @@ declare (strict_types=1);
 namespace ViSwoole\HttpServer\Router;
 
 use ArrayAccess;
+use Closure;
 use InvalidArgumentException;
 use Override;
 use RuntimeException;
 use ViSwoole\HttpServer\Method;
+use ViSwoole\HttpServer\Middleware;
 
 /**
  * 路线配置类
@@ -232,23 +234,18 @@ abstract class RouteAbstract implements ArrayAccess
   /**
    * 设置路由中间件
    * @access public
-   * @param string|array $middleware middleware::class | [middleware::class=>params]
-   * @param array $argument 需要传递给中间件的参数
+   * @param string|Closure|array{string|Closure} $middleware middleware::class | Closure
    * @return static
    */
-  public function middleware(string|array $middleware, array $argument = []): static
+  public function middleware(string|Closure|array $middleware): static
   {
-    if (is_array($middleware)) {
-      foreach ($middleware as $key => $argv) {
-        if (is_int($key)) {
-          $this->middleware($argv);
-        } else {
-          $this->options['middleware'][$key] = $argv;
-        }
-      }
-    } else {
-      $this->options['middleware'][$middleware] = $argument;
+    if (!is_array($middleware)) {
+      $middleware = [$middleware];
     }
+    foreach ($middleware as &$value) {
+      $value = Middleware::checkMiddleware($value);
+    }
+    $this->options['middleware'] = array_merge($this->options['middleware'], $middleware);
     return $this;
   }
 
