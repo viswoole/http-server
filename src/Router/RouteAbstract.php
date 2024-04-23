@@ -91,7 +91,7 @@ abstract class RouteAbstract implements ArrayAccess
   public function domain(string|array $domains): static
   {
     $domains = is_string($domains) ? [$domains] : $domains;
-    $this->options['domain'] = array_merge($this->options['domain'], $domains);
+    $this->options['domain'] = $domains;
     return $this;
   }
 

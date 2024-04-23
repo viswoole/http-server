@@ -313,7 +313,7 @@ class RouteCollector
     $path = $PathAndExt[0] ?? '/';
     $path = $path === '/' ? '/' : trim($path, '/');
     if (config('router.case_sensitive', false)) $path = strtolower($path);
-    $ext = $PathAndExt[1] ?? null;
+    $ext = $PathAndExt[1] ?? '';
     $domain = $request->getUri()->getHost();
     $method = $request->getMethod();
     $pattern = [];
@@ -371,9 +371,13 @@ class RouteCollector
   ): void
   {
     if (
-      (!empty($route[$option_name]) && in_array('*', $route[$option_name]))
+      (
+        !empty($route[$option_name])
+        && !in_array('*', $route[$option_name])
+      )
       && !in_array($value, $route[$option_name])
     ) {
+      var_dump($option_name, $route[$option_name]);
       throw new RouteNotFoundException('路由匹配失败');
     }
   }
