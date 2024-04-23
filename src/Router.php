@@ -32,15 +32,14 @@ use ViSwoole\HttpServer\Router\RouteItem;
  */
 class Router
 {
-  private static Router $instance;
   /**
    * @var RouteCollector[] 服务路由器实例
    */
-  protected array $serverRouteCollector = [];
+  protected static array $serverRouteCollector = [];
+  private static Router $instance;
 
   private function __construct()
   {
-    self::$instance = $this;
     $this->loadConfigRoute();
     $this->loadAnnotationRoute();
     $this->parseRoute();
@@ -94,7 +93,7 @@ class Router
       // 如果类路由注解的paths设置为null则默认为类名称
       if ($controller->paths === null) $controller->paths = $className;
       /** 路由收集器 */
-      $RouteCollector = $this->getRouteCollector($controller->server);
+      $RouteCollector = self::collector($controller->server);
       /** 分组路由实例 */
       $group = $RouteCollector->group($controller->paths, function () {
       })->options($controller->options);
@@ -191,11 +190,11 @@ class Router
    * @param string|null $serverName
    * @return RouteCollector
    */
-  public function getRouteCollector(string $serverName = null): RouteCollector
+  public static function collector(string $serverName = null): RouteCollector
   {
     if (is_null($serverName)) $serverName = Server::getName();
-    if (isset($this->serverRouteCollector[$serverName])) return $this->serverRouteCollector[$serverName];
-    return $this->serverRouteCollector[$serverName] = new RouteCollector();
+    if (isset(self::$serverRouteCollector[$serverName])) return self::$serverRouteCollector[$serverName];
+    return self::$serverRouteCollector[$serverName] = new RouteCollector();
   }
 
   /**
@@ -204,7 +203,7 @@ class Router
    */
   private function parseRoute(): void
   {
-    foreach ($this->serverRouteCollector as $collector) {
+    foreach (self::$serverRouteCollector as $collector) {
       $collector->parseRoute();
     }
     Output::echo('HTTP 路由服务已准备就绪', 'NOTICE', 0);

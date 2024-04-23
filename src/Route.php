@@ -47,7 +47,7 @@ class Route
   public static function __callStatic(string $name, mixed $arguments)
   {
     return call_user_func_array(
-      [Router::factory()->getRouteCollector(self::$currentServer), $name],
+      [Router::collector(self::$currentServer), $name],
       $arguments
     );
   }
