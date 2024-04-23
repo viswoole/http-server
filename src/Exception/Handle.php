@@ -19,6 +19,7 @@ use Throwable;
 use ViSwoole\Core\App;
 use ViSwoole\Core\Exception\ValidateException;
 use ViSwoole\HttpServer\Response;
+use ViSwoole\HttpServer\Status;
 
 /**
  * 异常处理类
@@ -43,17 +44,19 @@ class Handle
    */
   public function render(Throwable $e): bool
   {
-    $code = 500;
+    $statusCode = 500;
     if ($e instanceof HttpException) {
-      $code = $e->getHttpCode();
+      $statusCode = $e->getHttpCode();
       $this->response->setHeader($e->getHeaders());
+    } elseif ($e instanceof ValidateException) {
+      $statusCode = Status::BAD_REQUEST;
     } else {
       $this->report($e);
     }
     return $this->response->exception(
       $e->getMessage(),
       $e->getCode(),
-      $code,
+      $statusCode,
       $this->app->isDebug() ? $e->getTrace() : null
     )->send();
   }
