@@ -71,7 +71,9 @@ class Middleware
           return App::factory()->invoke($middleware, ['request' => $request, 'handler' => $carry]);
         };
       },
-      $handler
+      function (RequestInterface $request) use ($handler) {
+        return App::factory()->invoke($handler, ['request' => $request]);
+      }
     );
     return $app->invoke($pipeline);
   }
