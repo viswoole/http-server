@@ -295,16 +295,15 @@ class Response implements ResponseInterface
       $this->getSwooleResponse()->setStatusCode($this->statusCode, $this->reasonPhrase);
       if ($content === null) $content = $this->getBody()->getContents();
       if ($this->messageEchoToConsole) {
-        $fd = $this->getSwooleResponse()->fd;
         // 获得请求进入时间
         $request_time_float = Request::getSwooleRequest()
           ->server['request_time_float'];
         // 获取当前时间
         $current_time_float = microtime(true);
         // 计算耗时
-        $elapsed_time = $current_time_float - $request_time_float;
+        $elapsed_time = round($current_time_float - $request_time_float, 2);
         // 输出到控制台
-        Output::dump($content, "($fd)响应内容:耗时{$elapsed_time}秒");
+        Output::dump($content, "response:time $elapsed_time s", 'NOTICE', 0);
       }
       return $this->getSwooleResponse()->end($content);
     } else {
