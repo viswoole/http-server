@@ -438,7 +438,7 @@ class Response implements ResponseInterface
   {
     $this->headers['Content-Type'] = 'application/json; charset=utf-8';
     $this->setContent(json_encode($data, $this->jsonFlags));
-    $this->statusCode = $statusCode;
+    $this->withStatus($statusCode);
     return $this;
   }
 
@@ -454,6 +454,37 @@ class Response implements ResponseInterface
     $this->getBody()->seek(0);
     $this->getBody()->write($content);
     return $this;
+  }
+
+  /**
+   * 应用状态码
+   *
+   * @param int $code 状态码
+   * @param string $reasonPhrase 状态描述短语
+   * @return ResponseInterface
+   */
+  #[Override] public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
+  {
+    // 检查状态码是否有效
+    if ($code < 100 || $code >= 600) {
+      throw new InvalidArgumentException(
+        'Invalid HTTP status code, correct value should be between 100 and 599 '
+      );
+    }
+    $this->statusCode = $code;
+    if (empty($reasonPhrase)) {
+      $reasonPhrase = Status::getReasonPhrase($code);
+    }
+    $this->reasonPhrase = $reasonPhrase;
+    return $this;
+  }
+
+  /**
+   * @inheritDoc
+   */
+  #[Override] public function getReasonPhrase(): string
+  {
+    return $this->reasonPhrase;
   }
 
   /**
@@ -545,37 +576,6 @@ class Response implements ResponseInterface
   #[Override] public function setCode(int $statusCode, string $reasonPhrase = ''): ResponseInterface
   {
     return $this->withStatus($statusCode, $reasonPhrase);
-  }
-
-  /**
-   * 应用状态码
-   *
-   * @param int $code 状态码
-   * @param string $reasonPhrase 状态描述短语
-   * @return ResponseInterface
-   */
-  #[Override] public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
-  {
-    // 检查状态码是否有效
-    if ($code < 100 || $code >= 600) {
-      throw new InvalidArgumentException(
-        'Invalid HTTP status code, correct value should be between 100 and 599 '
-      );
-    }
-    $this->statusCode = $code;
-    if (empty($reasonPhrase)) {
-      $reasonPhrase = Status::getReasonPhrase($code);
-    }
-    $this->reasonPhrase = $reasonPhrase;
-    return $this;
-  }
-
-  /**
-   * @inheritDoc
-   */
-  #[Override] public function getReasonPhrase(): string
-  {
-    return $this->reasonPhrase;
   }
 
   /**
