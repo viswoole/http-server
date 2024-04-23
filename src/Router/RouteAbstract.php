@@ -181,7 +181,7 @@ abstract class RouteAbstract implements ArrayAccess
       }
       $this->options['method'] = array_unique($method);
     } else {
-      $this->options['method'] = $method->name;
+      $this->options['method'] = [$method->name];
     }
     return $this;
   }
