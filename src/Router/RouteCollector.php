@@ -304,9 +304,9 @@ class RouteCollector
    *
    * @access public
    * @param RequestInterface $request
-   * @return RouteAbstract|RouteItem|RouteMiss
+   * @return RouteMiss|RouteItem
    */
-  public function matchRoute(RequestInterface $request): RouteAbstract|RouteMiss|RouteItem
+  public function matchRoute(RequestInterface $request): RouteMiss|RouteItem
   {
     $basePath = $request->getUri()->getPath();
     $PathAndExt = explode('.', $basePath);

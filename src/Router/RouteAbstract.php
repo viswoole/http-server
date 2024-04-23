@@ -21,7 +21,6 @@ use InvalidArgumentException;
 use Override;
 use RuntimeException;
 use ViSwoole\HttpServer\Method;
-use ViSwoole\HttpServer\Middleware;
 
 /**
  * 路线配置类
@@ -149,10 +148,10 @@ abstract class RouteAbstract implements ArrayAccess
   /**
    * 路由处理
    *
-   * @param callable $handler
+   * @param callable|string|array $handler
    * @return void
    */
-  protected function handler(callable $handler): void
+  protected function handler(callable|string|array $handler): void
   {
     if (is_string($handler)) {
       if (str_contains($handler, '@')) {
@@ -241,9 +240,6 @@ abstract class RouteAbstract implements ArrayAccess
   {
     if (!is_array($middleware)) {
       $middleware = [$middleware];
-    }
-    foreach ($middleware as &$value) {
-      $value = Middleware::checkMiddleware($value);
     }
     $this->options['middleware'] = array_merge($this->options['middleware'], $middleware);
     return $this;
