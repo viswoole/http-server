@@ -20,6 +20,9 @@ use ViSwoole\Core\ServiceProvider;
 use ViSwoole\HttpServer\Contract\RequestInterface;
 use ViSwoole\HttpServer\Contract\ResponseInterface;
 
+/**
+ * Http服务提供者
+ */
 class HttpService extends ServiceProvider
 {
   /**
@@ -34,9 +37,22 @@ class HttpService extends ServiceProvider
    */
   #[Override] public function register(): void
   {
-    $this->app->bind(RequestInterface::class, Request::class);
-    $this->app->bind(ResponseInterface::class, Response::class);
-    $this->app->addExclude(RequestInterface::class);
-    $this->app->addExclude(ResponseInterface::class);
+    if (class_exists('\App\Request')) {
+      $requestClass = \App\Request::class;
+    } else {
+      $requestClass = Request::class;
+    }
+    if (class_exists('\App\Response')) {
+      $responseClass = \App\Response::class;
+    } else {
+      $responseClass = Response::class;
+    }
+    $this->app->bind(RequestInterface::class, $requestClass);
+    $this->app->bind(ResponseInterface::class, $responseClass);
+    $this->app->bind(Request::class, $requestClass);
+    $this->app->bind(Response::class, $responseClass);
+    // 不缓存单实例
+    $this->app->addExclude($requestClass);
+    $this->app->addExclude($responseClass);
   }
 }

@@ -21,15 +21,6 @@ use Swoole\Http\Request as swooleRequest;
 interface RequestInterface extends ServerRequestInterface
 {
   /**
-   * 创建request对象
-   *
-   * @access public
-   * @param swooleRequest|null $request
-   * @return static
-   */
-  public static function create(?swooleRequest $request = null): RequestInterface;
-
-  /**
    * 获取客户端ip
    * @return string
    */

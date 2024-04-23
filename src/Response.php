@@ -55,11 +55,7 @@ class Response implements ResponseInterface
   /**
    * @var array 响应标头
    */
-  protected array $headers = [
-    'Access-Control-Allow-Origin' => '*',
-    'Access-Control-Allow-Headers' => '*',
-    'Access-Control-Allow-Methods' => 'GET,POST,PATCH,PUT,DELETE,OPTIONS,DELETE',
-  ];
+  protected array $headers = [];
   /**
    * @var int json_encode flags 参数
    */
@@ -80,11 +76,46 @@ class Response implements ResponseInterface
   public function __construct(swooleResponse $response)
   {
     $this->swooleResponse = $response;
+    $accept = Request::getHeaderLine('accept');
     $this->setHeader(
       'Content-Type',
-      Request::getHeaderLine('accept') ?? '*'
+      empty($accept) ? '*' : $accept
     );
     $this->protocolVersion = Request::getProtocolVersion();
+  }
+
+  /**
+   * 通过给定不区分大小写的名称检索标头的值，这些值以逗号分隔的字符串形式返回。
+   *
+   * 该方法返回给定不区分大小写的标头名称的所有标头值的字符串，这些值使用逗号拼接在一起。
+   *
+   * 注意：并非所有标头值都可以使用逗号拼接来适当表示。对于这样的标头，请改用 getHeader()，
+   * 并在拼接时提供自己的分隔符。
+   *
+   * 如果消息中不包含标头，则此方法必须返回一个空字符串。
+   *
+   * @param string $name 不区分大小写的标头字段名称。
+   * @return string 作为给定标头的所有字符串值的逗号拼接字符串。
+   * 如果消息中没有该标头，则此方法必须返回一个空字符串。
+   */
+  #[Override] public function getHeaderLine(string $name): string
+  {
+    return Header::getHeader($name, $this->headers, 'string');
+  }
+
+  /**
+   * 通过给定不区分大小写的名称检索消息标头值。
+   *
+   * 该方法返回给定不区分大小写的标头名称的所有标头值的数组。
+   *
+   * 如果消息中不包含标头，则此方法必须返回一个空数组。
+   *
+   * @param string $name 不区分大小写的标头字段名称。
+   * @return string[] 作为给定标头的所有字符串值的数组。如果消息中没有该标头，则此方法必须返回一个空数组。
+   */
+  #[Override] public function getHeader(string $name): array
+  {
+    return Header::getHeader($name, $this->headers);
   }
 
   /**
@@ -130,40 +161,6 @@ class Response implements ResponseInterface
   {
     $lowercaseArray = array_change_key_case($this->headers);
     return array_key_exists(strtolower($name), $lowercaseArray);
-  }
-
-  /**
-   * 通过给定不区分大小写的名称检索标头的值，这些值以逗号分隔的字符串形式返回。
-   *
-   * 该方法返回给定不区分大小写的标头名称的所有标头值的字符串，这些值使用逗号拼接在一起。
-   *
-   * 注意：并非所有标头值都可以使用逗号拼接来适当表示。对于这样的标头，请改用 getHeader()，
-   * 并在拼接时提供自己的分隔符。
-   *
-   * 如果消息中不包含标头，则此方法必须返回一个空字符串。
-   *
-   * @param string $name 不区分大小写的标头字段名称。
-   * @return string 作为给定标头的所有字符串值的逗号拼接字符串。
-   * 如果消息中没有该标头，则此方法必须返回一个空字符串。
-   */
-  #[Override] public function getHeaderLine(string $name): string
-  {
-    return Header::getHeader($name, $this->headers, 'string');
-  }
-
-  /**
-   * 通过给定不区分大小写的名称检索消息标头值。
-   *
-   * 该方法返回给定不区分大小写的标头名称的所有标头值的数组。
-   *
-   * 如果消息中不包含标头，则此方法必须返回一个空数组。
-   *
-   * @param string $name 不区分大小写的标头字段名称。
-   * @return string[] 作为给定标头的所有字符串值的数组。如果消息中没有该标头，则此方法必须返回一个空数组。
-   */
-  #[Override] public function getHeader(string $name): array
-  {
-    return Header::getHeader($name, $this->headers);
   }
 
   /**
@@ -368,16 +365,18 @@ class Response implements ResponseInterface
   /**
    * 创建响应对象（该方法由框架内部调用，在接收到request事件时会自动调用该方法对swooleRequest进行代理）
    *
-   * @param swooleResponse|null $response
+   * @param swooleResponse $response
    * @return ResponseInterface
    */
-  public static function create(?swooleResponse $response = null): ResponseInterface
+  public static function create(swooleResponse $response): ResponseInterface
   {
     $instance = Context::get(__CLASS__, null, Coroutine::getTopId() ?: null);
     if (is_null($instance)) {
-      if (is_null($response)) $response = swooleResponse::create();
-      $requestClass = Response::class;
-      if (class_exists('\App\Response')) $requestClass = \App\Response::class;
+      if (class_exists('\App\Response')) {
+        $requestClass = \App\Response::class;
+      } else {
+        $requestClass = Response::class;
+      }
       $instance = new $requestClass($response);
       Context::set(__CLASS__, $instance, Coroutine::getTopId() ?: null);
     }
