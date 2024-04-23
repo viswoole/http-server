@@ -38,18 +38,18 @@ class Request implements RequestInterface
    * 请求类型
    */
   public const array ACCEPT_TYPE = [
-    'xml' => 'application/xml,text/xml,application/x-xml',
+    'html' => 'text/html,application/xhtml+xml,*/*',
     'json' => 'application/json,text/x-json,text/json',
+    'image' => 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/webp,image/*',
+    'text' => 'text/plain',
+    'xml' => 'application/xml,text/xml,application/x-xml',
     'js' => 'text/javascript,application/javascript,application/x-javascript',
     'css' => 'text/css',
     'rss' => 'application/rss+xml',
     'yaml' => 'application/x-yaml,text/yaml',
     'atom' => 'application/atom+xml',
     'pdf' => 'application/pdf',
-    'text' => 'text/plain',
-    'image' => 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/webp,image/*',
-    'csv' => 'text/csv',
-    'html' => 'text/html,application/xhtml+xml,*/*',
+    'csv' => 'text/csv'
   ];
   /**
    *  例1 ['htmlspecialchars'=>['flags' = ENT_QUOTES|ENT_SUBSTITUTE]]。
