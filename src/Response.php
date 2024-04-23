@@ -76,12 +76,27 @@ class Response implements ResponseInterface
   public function __construct(swooleResponse $response)
   {
     $this->swooleResponse = $response;
-    $accept = Request::getHeaderLine('accept');
-    $this->setHeader(
-      'Content-Type',
-      empty($accept) ? '*' : $accept
-    );
     $this->protocolVersion = Request::getProtocolVersion();
+  }
+
+  /**
+   * 检索 HTTP 协议版本号作为字符串。
+   *
+   * @return string HTTP 版本号（例如，"1.1"，"1.0"）。
+   */
+  #[Override] public function getProtocolVersion(): string
+  {
+    return $this->protocolVersion;
+  }
+
+  /**
+   * 自定义实例化
+   *
+   * @return ResponseInterface
+   */
+  public static function __make(): ResponseInterface
+  {
+    return Context::get(__CLASS__, Coroutine::getTopId() ?: null);
   }
 
   /**
@@ -116,71 +131,6 @@ class Response implements ResponseInterface
   #[Override] public function getHeader(string $name): array
   {
     return Header::getHeader($name, $this->headers);
-  }
-
-  /**
-   * 设置响应头(可批量设置)
-   *
-   * @access public
-   * @param string|array $name 不区分大小写标头或[$name=>$value]
-   * @param array|string|null $value 标头值
-   * @return ResponseInterface
-   */
-  #[Override] public function setHeader(
-    array|string      $name,
-    array|string|null $value = null
-  ): ResponseInterface
-  {
-    if (is_array($name)) {
-      foreach ($name as $headerName => $headerValue) {
-        Header::validate($headerName, $headerValue);
-        $newName = Header::hasHeader($headerName, $this->headers);
-        if (is_bool($newName)) $newName = Header::formatName($headerName);
-        $this->headers[$newName] = is_array($headerValue) ? implode(
-          ',', $headerValue
-        ) : $headerValue;
-      }
-    } else {
-      if (empty($value)) throw new InvalidArgumentException('响应标头值不可为空');
-      Header::validate($name, $value);
-      $newName = Header::hasHeader($name, $this->headers);
-      if (is_bool($newName)) $newName = Header::formatName($name);
-      $this->headers[$newName] = is_array($value) ? implode(',', $value) : $value;
-    }
-    return $this;
-  }
-
-  /**
-   * 检查是否存在给定不区分大小写名称的标头。
-   *
-   * @param string $name 不区分大小写的标头字段名称。
-   * @return bool 如果任何标头名称与给定的标头名称使用不区分大小写的字符串比较匹配，则返回 true。
-   * 如果消息中没有找到匹配的标头名称，则返回 false。
-   */
-  #[Override] public function hasHeader(string $name): bool
-  {
-    $lowercaseArray = array_change_key_case($this->headers);
-    return array_key_exists(strtolower($name), $lowercaseArray);
-  }
-
-  /**
-   * 检索 HTTP 协议版本号作为字符串。
-   *
-   * @return string HTTP 版本号（例如，"1.1"，"1.0"）。
-   */
-  #[Override] public function getProtocolVersion(): string
-  {
-    return $this->protocolVersion;
-  }
-
-  /**
-   * 自定义实例化
-   *
-   * @return ResponseInterface
-   */
-  public static function __make(): ResponseInterface
-  {
-    return Context::get(__CLASS__, Coroutine::getTopId() ?: null);
   }
 
   /**
@@ -243,6 +193,19 @@ class Response implements ResponseInterface
       $this->headers[$newName] .= $value;
     }
     return $this;
+  }
+
+  /**
+   * 检查是否存在给定不区分大小写名称的标头。
+   *
+   * @param string $name 不区分大小写的标头字段名称。
+   * @return bool 如果任何标头名称与给定的标头名称使用不区分大小写的字符串比较匹配，则返回 true。
+   * 如果消息中没有找到匹配的标头名称，则返回 false。
+   */
+  #[Override] public function hasHeader(string $name): bool
+  {
+    $lowercaseArray = array_change_key_case($this->headers);
+    return array_key_exists(strtolower($name), $lowercaseArray);
   }
 
   /**
@@ -347,6 +310,38 @@ class Response implements ResponseInterface
     } else {
       return false;
     }
+  }
+
+  /**
+   * 设置响应头(可批量设置)
+   *
+   * @access public
+   * @param string|array $name 不区分大小写标头或[$name=>$value]
+   * @param array|string|null $value 标头值
+   * @return ResponseInterface
+   */
+  #[Override] public function setHeader(
+    array|string      $name,
+    array|string|null $value = null
+  ): ResponseInterface
+  {
+    if (is_array($name)) {
+      foreach ($name as $headerName => $headerValue) {
+        Header::validate($headerName, $headerValue);
+        $newName = Header::hasHeader($headerName, $this->headers);
+        if (is_bool($newName)) $newName = Header::formatName($headerName);
+        $this->headers[$newName] = is_array($headerValue) ? implode(
+          ',', $headerValue
+        ) : $headerValue;
+      }
+    } else {
+      if (empty($value)) throw new InvalidArgumentException('响应标头值不可为空');
+      Header::validate($name, $value);
+      $newName = Header::hasHeader($name, $this->headers);
+      if (is_bool($newName)) $newName = Header::formatName($name);
+      $this->headers[$newName] = is_array($value) ? implode(',', $value) : $value;
+    }
+    return $this;
   }
 
   /**
