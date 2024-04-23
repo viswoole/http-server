@@ -31,6 +31,6 @@ abstract class AnnotationRouteAbstract
     public array             $options = []
   )
   {
-    $this->options['methods'] = $this->methods;
+    $this->options['method'] = $this->methods;
   }
 }

@@ -20,7 +20,6 @@ use ReflectionMethod;
 use ViSwoole\Core\Console\Output;
 use ViSwoole\Core\Event;
 use ViSwoole\Core\Facades\Server;
-use ViSwoole\HttpServer\Router\Annotation\AnnotationRouteAbstract;
 use ViSwoole\HttpServer\Router\Annotation\AutoRouteController;
 use ViSwoole\HttpServer\Router\Annotation\RouteController;
 use ViSwoole\HttpServer\Router\Annotation\RouteMapping;
@@ -77,9 +76,12 @@ class Router
         continue;
       }
       // 获取类路由注解
-      $classAttributes = $refClass->getAttributes(AnnotationRouteAbstract::class);
-      // 如果不存在路由注解则跳过
-      if (empty($classAttributes)) continue;
+      $classAttributes = $refClass->getAttributes(RouteController::class);
+      if (empty($classAttributes)) {
+        $classAttributes = $refClass->getAttributes(AutoRouteController::class);
+        // 如果不存在路由注解则跳过
+        if (empty($classAttributes)) continue;
+      }
       /** @var $controller RouteController|AutoRouteController 控制器路由注解实例 */
       $controller = $classAttributes[0]->newInstance();
       // 如果指定了服务，且服务名称非当前正在运行的服务，则跳过解析

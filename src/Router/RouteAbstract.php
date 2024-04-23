@@ -58,7 +58,11 @@ abstract class RouteAbstract implements ArrayAccess
    * @param callable $handler
    * @param array|null $parentOption
    */
-  public function __construct(string|array $paths, callable $handler, array $parentOption = null)
+  public function __construct(
+    string|array   $paths,
+    callable|array $handler,
+    array          $parentOption = null
+  )
   {
     if (is_array($parentOption)) {
       $this->options = $parentOption;
@@ -117,7 +121,7 @@ abstract class RouteAbstract implements ArrayAccess
           }
         }
       }
-      $path = $path === '/' ? '/' : trim($case ? strtolower($path) : $path, '/');
+      $path = $path === '/' ? '/' : trim(!$case ? strtolower($path) : $path, '/');
     }
     $this->pattern($pattern);
     // 合并父级path
@@ -176,10 +180,13 @@ abstract class RouteAbstract implements ArrayAccess
   public function method(Method|array $method = Method::ANY): static
   {
     if (is_array($method)) {
+      $newMethod = [];
       foreach ($method as $roureMethod) {
-        $method[] = $roureMethod->name;
+        if (!in_array($roureMethod->name, $newMethod)) {
+          $newMethod[] = $roureMethod->name;
+        }
       }
-      $this->options['method'] = array_unique($method);
+      $this->options['method'] = $newMethod;
     } else {
       $this->options['method'] = [$method->name];
     }
