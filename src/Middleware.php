@@ -46,7 +46,6 @@ class Middleware
       $init = true;
       $path = App::factory()->getAppPath() . '/middleware.php';
       if (file_exists($path)) require_once $path;
-      echo_log('HTTP 路由中间件服务准备就绪', 'NOTICE', 0);
     }
   }
 

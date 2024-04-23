@@ -207,7 +207,7 @@ class Router
     foreach ($this->serverRouteCollector as $collector) {
       $collector->parseRoute();
     }
-    Output::echo('http 路由服务已准备就绪', 'NOTICE', 0);
+    Output::echo('HTTP 路由服务已准备就绪', 'NOTICE', 0);
     Event::factory()->emit('RouteLoaded');
   }
 
