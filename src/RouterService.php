@@ -27,8 +27,9 @@ class RouterService extends ServiceProvider
    */
   #[Override] public function boot(): void
   {
-    // 服务启动，创建路由
+    // 服务启动，创建路由 加载中间件
     Event::on('ServerStart', function () {
+      Middleware::init();
       Router::factory();
     });
   }
