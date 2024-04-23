@@ -25,7 +25,7 @@ final class Status
   /** 服务器已经理解了客户端的请求，并将通过Upgrade消息头通知客户端采用不同的协议来完成。 */
   public const int SWITCHING_PROTOCOLS = 101;
 
-  /** 服务器正在处理请求，并且有一个稍后的响应。 */
+  /** 服务器正在处理请求，并且有一个稍后地响应。 */
   public const int PROCESSING = 102;
 
   /** 请求成功，内容已被返回。 */
@@ -274,7 +274,7 @@ final class Status
    */
   public static function getReasonPhrases(): array
   {
-    return static::$reasonPhrases;
+    return Status::$reasonPhrases;
   }
 
   /**
@@ -286,6 +286,6 @@ final class Status
    */
   public static function getReasonPhrase(int $code): string
   {
-    return static::$reasonPhrases[$code] ?? 'Unknown';
+    return Status::$reasonPhrases[$code] ?? 'Unknown';
   }
 }
