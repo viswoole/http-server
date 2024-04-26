@@ -45,19 +45,28 @@ class Handle
   public function render(Throwable $e): bool
   {
     $statusCode = 500;
+    $message = $e->getMessage();
+    $errTrace = null;
     if ($e instanceof HttpException) {
       $statusCode = $e->getHttpCode();
       $this->response->setHeader($e->getHeaders());
     } elseif ($e instanceof ValidateException) {
       $statusCode = Status::BAD_REQUEST;
     } else {
+      // 如果开启了debug模式则将具体的错误信息和错误堆栈信息返回
+      if ($this->app->isDebug()) {
+        $message = $e->getMessage();
+        $errTrace = $e->getTrace();
+      } else {
+        $message = 'Internal Server Error';
+      }
       $this->report($e);
     }
     return $this->response->exception(
-      $e->getMessage(),
+      $message,
       $e->getCode(),
       $statusCode,
-      $this->app->isDebug() ? $e->getTrace() : null
+      $errTrace
     )->send();
   }
 
