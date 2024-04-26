@@ -311,7 +311,7 @@ class RouteCollector
     $basePath = $request->getUri()->getPath();
     $PathAndExt = explode('.', $basePath);
     $path = $PathAndExt[0] ?? '/';
-    $path = $path === '/' ? '/' : trim($path, '/');
+    $path = $path === '/' ? '/' : rtrim($path, '/');
     if (!config('router.case_sensitive', false)) $path = strtolower($path);
     $ext = $PathAndExt[1] ?? '';
     $domain = $request->getUri()->getHost();

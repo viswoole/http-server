@@ -121,7 +121,11 @@ abstract class RouteAbstract implements ArrayAccess
           }
         }
       }
-      $path = $path === '/' ? '/' : trim(!$case ? strtolower($path) : $path, '/');
+      if (!str_starts_with($path, '/')) {
+        $path = "/$path";
+      } else {
+        $path = $path === '/' ? '/' : rtrim(!$case ? strtolower($path) : $path, '/');
+      }
     }
     $this->pattern($pattern);
     // 合并父级path
@@ -129,7 +133,12 @@ abstract class RouteAbstract implements ArrayAccess
       $mergePaths = [];
       foreach ($this->options['paths'] as $path1) {
         foreach ($paths as $path2) {
-          $mergePaths[] = $path2 === '/' ? $path1 : "$path1/$path2";
+          if ($path2 === '/') {
+            $mergePaths[] = $path1;
+          } else {
+            $path1 = $path1 === '/' ? '' : $path1;
+            $mergePaths[] = $path1 . $path2;
+          }
         }
       }
       $this->options['paths'] = $mergePaths;
