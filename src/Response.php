@@ -63,7 +63,7 @@ class Response implements ResponseInterface
   /**
    * @var bool 是否把消息输出到控制台，建议在调试阶段使用
    */
-  protected bool $messageEchoToConsole = false;
+  protected bool $echoToConsole = false;
   /**
    * @var StreamInterface body流
    */
@@ -294,7 +294,7 @@ class Response implements ResponseInterface
       }
       $this->getSwooleResponse()->setStatusCode($this->statusCode, $this->reasonPhrase);
       if ($content === null) $content = $this->getBody()->getContents();
-      if ($this->messageEchoToConsole) {
+      if ($this->echoToConsole) {
         // 获得请求进入时间
         $request_time_float = Request::getSwooleRequest()
           ->server['request_time_float'];
@@ -517,7 +517,7 @@ class Response implements ResponseInterface
    */
   #[Override] public function echoConsole(bool $echo = true): ResponseInterface
   {
-    $this->messageEchoToConsole = $echo;
+    $this->echoToConsole = $echo;
     return $this;
   }
 
