@@ -72,7 +72,10 @@ class Middleware
         };
       },
       function (RequestInterface $request) use ($handler) {
-        return App::factory()->invoke($handler, ['request' => $request]);
+        return App::factory()->invoke(
+          $handler,
+          array_merge($request->post(), $request->get())
+        );
       }
     );
     return $app->invoke($pipeline);
