@@ -20,7 +20,6 @@ use InvalidArgumentException;
 use ViSwoole\Core\App;
 use ViSwoole\Core\Facades\Server;
 use ViSwoole\HttpServer\Contract\MiddlewareInterface;
-use ViSwoole\HttpServer\Contract\RequestInterface;
 
 class Middleware
 {
@@ -58,7 +57,6 @@ class Middleware
    */
   public static function process(callable|array|string $handler, array $middlewares = []): mixed
   {
-    $app = App::factory();
     $middlewares = array_map(function ($middleware) {
       return self::checkMiddleware($middleware);
     }, $middlewares);
@@ -67,15 +65,13 @@ class Middleware
     $pipeline = array_reduce(
       array_reverse($middlewares),
       function (Closure $carry, $middleware) {
-        return function (RequestInterface $request) use ($middleware, $carry) {
-          return App::factory()->invoke($middleware, ['request' => $request, 'handler' => $carry]);
+        return function () use ($middleware, $carry) {
+          return App::factory()->invoke($middleware, ['next' => $carry]);
         };
       },
-      function (RequestInterface $request) use ($handler) {
-        return App::factory()->invoke($handler, ['request' => $request]);
-      }
+      $handler
     );
-    return $app->invoke($pipeline);
+    return App::factory()->invoke($pipeline);
   }
 
   /**
