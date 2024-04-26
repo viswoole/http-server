@@ -29,6 +29,6 @@ interface MiddlewareInterface
    */
   public function process(
     RequestInterface $request,
-    Closure          $next
+    Closure          $handler
   ): mixed;
 }
