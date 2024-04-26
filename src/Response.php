@@ -100,40 +100,6 @@ class Response implements ResponseInterface
   }
 
   /**
-   * 通过给定不区分大小写的名称检索标头的值，这些值以逗号分隔的字符串形式返回。
-   *
-   * 该方法返回给定不区分大小写的标头名称的所有标头值的字符串，这些值使用逗号拼接在一起。
-   *
-   * 注意：并非所有标头值都可以使用逗号拼接来适当表示。对于这样的标头，请改用 getHeader()，
-   * 并在拼接时提供自己的分隔符。
-   *
-   * 如果消息中不包含标头，则此方法必须返回一个空字符串。
-   *
-   * @param string $name 不区分大小写的标头字段名称。
-   * @return string 作为给定标头的所有字符串值的逗号拼接字符串。
-   * 如果消息中没有该标头，则此方法必须返回一个空字符串。
-   */
-  #[Override] public function getHeaderLine(string $name): string
-  {
-    return Header::getHeader($name, $this->headers, 'string');
-  }
-
-  /**
-   * 通过给定不区分大小写的名称检索消息标头值。
-   *
-   * 该方法返回给定不区分大小写的标头名称的所有标头值的数组。
-   *
-   * 如果消息中不包含标头，则此方法必须返回一个空数组。
-   *
-   * @param string $name 不区分大小写的标头字段名称。
-   * @return string[] 作为给定标头的所有字符串值的数组。如果消息中没有该标头，则此方法必须返回一个空数组。
-   */
-  #[Override] public function getHeader(string $name): array
-  {
-    return Header::getHeader($name, $this->headers);
-  }
-
-  /**
    * 返回具有指定的 HTTP 协议版本的实例。
    *
    * @param string $version HTTP 版本号（例如，"1.1"，"1.0"）。
@@ -289,6 +255,7 @@ class Response implements ResponseInterface
   #[Override] public function send(?string $content = null): bool
   {
     if ($this->getSwooleResponse()->isWritable()) {
+      if (!$this->hasHeader('Content-Type')) $this->setContentType('text/html');
       foreach ($this->headers as $k => $v) {
         $this->getSwooleResponse()->setHeader($k, $v);
       }
@@ -309,6 +276,22 @@ class Response implements ResponseInterface
     } else {
       return false;
     }
+  }
+
+  /**
+   * 设置Content-Type响应头
+   *
+   * @access public
+   * @param string $contentType 输出类型 默认application/json
+   * @param string $charset 输出编码 默认utf-8
+   * @return ResponseInterface
+   */
+  #[Override] public function setContentType(
+    string $contentType = 'application/json',
+    string $charset = 'utf-8'
+  ): ResponseInterface
+  {
+    return $this->setHeader('Content-Type', "$contentType; charset=$charset");
   }
 
   /**
@@ -375,6 +358,40 @@ class Response implements ResponseInterface
       Context::set(__CLASS__, $instance, Coroutine::getTopId() ?: null);
     }
     return $instance;
+  }
+
+  /**
+   * 通过给定不区分大小写的名称检索标头的值，这些值以逗号分隔的字符串形式返回。
+   *
+   * 该方法返回给定不区分大小写的标头名称的所有标头值的字符串，这些值使用逗号拼接在一起。
+   *
+   * 注意：并非所有标头值都可以使用逗号拼接来适当表示。对于这样的标头，请改用 getHeader()，
+   * 并在拼接时提供自己的分隔符。
+   *
+   * 如果消息中不包含标头，则此方法必须返回一个空字符串。
+   *
+   * @param string $name 不区分大小写的标头字段名称。
+   * @return string 作为给定标头的所有字符串值的逗号拼接字符串。
+   * 如果消息中没有该标头，则此方法必须返回一个空字符串。
+   */
+  #[Override] public function getHeaderLine(string $name): string
+  {
+    return Header::getHeader($name, $this->headers, 'string');
+  }
+
+  /**
+   * 通过给定不区分大小写的名称检索消息标头值。
+   *
+   * 该方法返回给定不区分大小写的标头名称的所有标头值的数组。
+   *
+   * 如果消息中不包含标头，则此方法必须返回一个空数组。
+   *
+   * @param string $name 不区分大小写的标头字段名称。
+   * @return string[] 作为给定标头的所有字符串值的数组。如果消息中没有该标头，则此方法必须返回一个空数组。
+   */
+  #[Override] public function getHeader(string $name): array
+  {
+    return Header::getHeader($name, $this->headers);
   }
 
   /**
@@ -479,22 +496,6 @@ class Response implements ResponseInterface
   #[Override] public function getReasonPhrase(): string
   {
     return $this->reasonPhrase;
-  }
-
-  /**
-   * 设置Content-Type响应头
-   *
-   * @access public
-   * @param string $contentType 输出类型 默认application/json
-   * @param string $charset 输出编码 默认utf-8
-   * @return ResponseInterface
-   */
-  #[Override] public function setContentType(
-    string $contentType = 'application/json',
-    string $charset = 'utf-8'
-  ): ResponseInterface
-  {
-    return $this->setHeader('Content-Type', "$contentType; charset=$charset");
   }
 
   /**
