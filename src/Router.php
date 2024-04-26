@@ -16,7 +16,6 @@ declare (strict_types=1);
 namespace ViSwoole\HttpServer;
 
 use ReflectionClass;
-use ReflectionMethod;
 use ViSwoole\Core\Console\Output;
 use ViSwoole\Core\Event;
 use ViSwoole\Core\Facades\Server;
@@ -86,10 +85,6 @@ class Router
       $controller = $classAttributes[0]->newInstance();
       // 如果指定了服务，且服务名称非当前正在运行的服务，则跳过解析
       if ($controller->server !== null && $controller->server !== Server::getName()) continue;
-      // 判断是否设置了描述
-      if (!isset($controller->options['describe'])) {
-        $controller->options['describe'] = $this->getDocComment($refClass);
-      }
       /** 是否为自动路由 */
       $isAutoRoute = $controller instanceof AutoRouteController;
       // 如果类路由注解的paths设置为null则默认为类名称
@@ -120,19 +115,11 @@ class Router
           // 自动路由
           // 创建新的路由项
           $routeItem = new RouteItem($method->getName(), $handler, $group->getOptions());
-          // 设置描述
-          $routeItem->describe($this->getDocComment($method));
           // 添加到组的子路由中
           $group->addItem($routeItem);
         } elseif (isset($methodAttributes[0])) {
           /** @var $methodAnnotationRoute RouteMapping 注解路由 */
           $methodAnnotationRoute = $methodAttributes[0]->newInstance();
-          // 设置描述
-          if (!isset($methodAnnotationRoute->options['describe'])) {
-            $methodAnnotationRoute->options['describe'] = $this->getDocComment(
-              $method
-            );
-          }
           $path = $methodAnnotationRoute->paths ?: $method->getName();
           // 创建新的路由项
           $routeItem = new RouteItem($path, $handler, $group->getOptions());
@@ -162,27 +149,6 @@ class Router
     $classNamespace = str_replace('/', '\\', $classNamespace);
     // 类完全限定名称Class::class
     return [$classNamespace . '\\' . $className, $className];
-  }
-
-  /**
-   * 获取注释
-   *
-   * @param ReflectionClass|ReflectionMethod $reflector
-   * @return string
-   */
-  private function getDocComment(ReflectionClass|ReflectionMethod $reflector): string
-  {
-    $classDocComment = $reflector->getDocComment();
-    if ($classDocComment) {
-      if (preg_match('/^\s+\*\s+(.+)$/m', $classDocComment, $matches)) {
-        $classDocComment = trim($matches[1]);
-      } else {
-        $classDocComment = '';
-      }
-    } else {
-      $classDocComment = '';
-    }
-    return $classDocComment;
   }
 
   /**
