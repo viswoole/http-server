@@ -33,6 +33,8 @@ abstract class RouteAbstract implements ArrayAccess
   protected array $options = [
     // 路由访问路径
     'paths' => null,
+    // 路由描述
+    'describe' => '',
     // 处理方法
     'handler' => null,
     // http请求方式
@@ -46,7 +48,9 @@ abstract class RouteAbstract implements ArrayAccess
     // 域名路由
     'domain' => ['*'],
     // 变量正则表达式
-    'pattern' => []
+    'pattern' => [],
+    // 是否隐藏于路由文档
+    'hidden' => false
   ];
 
   /**
@@ -62,6 +66,7 @@ abstract class RouteAbstract implements ArrayAccess
   {
     if (is_array($parentOption)) {
       $this->options = $parentOption;
+      $this->options['describe'] = '';
     } else {
       $this->suffix(config('router.suffix', ['*']));
       $this->domain(config('router.domain', []));
@@ -215,6 +220,30 @@ abstract class RouteAbstract implements ArrayAccess
   public function getOptions(): array
   {
     return $this->options;
+  }
+
+  /**
+   * 路由描述
+   *
+   * @param string $describe 描述
+   * @return static
+   */
+  public function describe(string $describe): static
+  {
+    $this->options['describe'] = $describe;
+    return $this;
+  }
+
+  /**
+   * 隐藏于文档
+   *
+   * @param bool $hide
+   * @return static
+   */
+  public function hidden(bool $hide): static
+  {
+    $this->options['hidden'] = $hide;
+    return $this;
   }
 
   /**
