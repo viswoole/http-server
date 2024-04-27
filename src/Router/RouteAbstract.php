@@ -49,13 +49,11 @@ abstract class RouteAbstract implements ArrayAccess
     'domain' => ['*'],
     // 变量正则表达式
     'pattern' => [],
-    // 是否隐藏于路由文档
-    'hidden' => false
   ];
 
   /**
    * @param string|array $paths
-   * @param callable $handler
+   * @param callable|array $handler
    * @param array|null $parentOption
    */
   public function __construct(
@@ -231,18 +229,6 @@ abstract class RouteAbstract implements ArrayAccess
   public function describe(string $describe): static
   {
     $this->options['describe'] = $describe;
-    return $this;
-  }
-
-  /**
-   * 隐藏于文档
-   *
-   * @param bool $hide
-   * @return static
-   */
-  public function hidden(bool $hide): static
-  {
-    $this->options['hidden'] = $hide;
     return $this;
   }
 
