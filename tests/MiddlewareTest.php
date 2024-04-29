@@ -21,7 +21,6 @@ use PHPUnit\Framework\TestCase;
 use Throwable;
 use ViSwoole\Core\Contract\MiddlewareInterface;
 use ViSwoole\Core\Middleware;
-use ViSwoole\HttpServer\Contract\RequestInterface;
 use ViSwoole\HttpServer\Request;
 
 class MiddlewareTest extends TestCase
@@ -59,11 +58,11 @@ class M1 implements MiddlewareInterface
    * @inheritDoc
    */
   #[Override] public function process(
-    RequestInterface $request, Closure $handler
+    Closure $handler
   ): mixed
   {
     echo_log('执行了第一个中间件');
-    return $handler($request);
+    return $handler();
   }
 }
 
@@ -74,11 +73,11 @@ class M2 implements MiddlewareInterface
    * @inheritDoc
    */
   #[Override] public function process(
-    RequestInterface $request, Closure $handler
+    Closure $handler
   ): mixed
   {
     echo_log('执行了第二个中间件');
-    return $handler($request);
+    return $handler();
   }
 }
 
