@@ -44,8 +44,8 @@ class EventHandle
         $handle = $route['handler'];
         $middleware = $route['middleware'];
       }
-      $result = Middleware::process(function () use ($handle) {
-        return App::invoke($handle);
+      $result = Middleware::process(function () use ($handle, $psr7Request) {
+        return App::invoke($handle, array_merge($psr7Request->get(), $psr7Request->post()));
       }, $middleware);
       if ($result instanceof ResponseInterface) {
         return $result->send();
