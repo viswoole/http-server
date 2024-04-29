@@ -20,8 +20,10 @@ use Swoole\Http\Response;
 use Throwable;
 use ViSwoole\Core\Facades\App;
 use ViSwoole\Core\Facades\Server;
+use ViSwoole\Core\Middleware;
+use ViSwoole\Core\Router;
+use ViSwoole\Core\Router\RouteMiss;
 use ViSwoole\HttpServer\Contract\ResponseInterface;
-use ViSwoole\HttpServer\Router\RouteMiss;
 
 class EventHandle
 {
@@ -42,7 +44,9 @@ class EventHandle
         $handle = $route['handler'];
         $middleware = $route['middleware'];
       }
-      $result = Middleware::process($handle, $middleware);
+      $result = Middleware::process(function () use ($handle) {
+        return App::invoke($handle);
+      }, $middleware);
       if ($result instanceof ResponseInterface) {
         return $result->send();
       } elseif (is_array($result) | is_object($result)) {

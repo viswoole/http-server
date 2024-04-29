@@ -19,9 +19,9 @@ use Closure;
 use Override;
 use PHPUnit\Framework\TestCase;
 use Throwable;
-use ViSwoole\HttpServer\Contract\MiddlewareInterface;
+use ViSwoole\Core\Contract\MiddlewareInterface;
+use ViSwoole\Core\Middleware;
 use ViSwoole\HttpServer\Contract\RequestInterface;
-use ViSwoole\HttpServer\Middleware;
 use ViSwoole\HttpServer\Request;
 
 class MiddlewareTest extends TestCase
