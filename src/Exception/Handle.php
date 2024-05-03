@@ -24,26 +24,22 @@ use ViSwoole\HttpServer\Status;
 /**
  * 异常处理类
  */
-class Handle
+class Handle extends \ViSwoole\Core\Exception\Handle
 {
-  protected array $ignoreReport = [
-    HttpException::class,
-    ValidateException::class,
-    RouteNotFoundException::class
-  ];
-
   public function __construct(protected Response $response, protected App $app)
   {
+    parent::__construct([HttpException::class]);
   }
 
   /**
    * 处理异常
    *
    * @param Throwable $e
-   * @return bool
+   * @return void
    */
-  public function render(Throwable $e): bool
+  public function render(Throwable $e): void
   {
+    parent::render($e);
     $statusCode = 500;
     $message = $e->getMessage();
     $errTrace = null;
@@ -52,62 +48,17 @@ class Handle
       $this->response->setHeader($e->getHeaders());
     } elseif ($e instanceof ValidateException) {
       $statusCode = Status::BAD_REQUEST;
+    } elseif ($this->app->isDebug()) {
+      $message = $e->getMessage();
+      $errTrace = $e->getTrace();
     } else {
-      // 如果开启了debug模式则将具体的错误信息和错误堆栈信息返回
-      if ($this->app->isDebug()) {
-        $message = $e->getMessage();
-        $errTrace = $e->getTrace();
-      } else {
-        $message = 'Internal Server Error';
-      }
-      $this->report($e);
+      $message = 'Internal Server Error';
     }
-    return $this->response->exception(
+    $this->response->exception(
       $message,
       $e->getCode(),
       $statusCode,
       $errTrace
     )->send();
-  }
-
-  /**
-   * 写入日志
-   *
-   * @param Throwable $e
-   * @return void
-   */
-  public function report(Throwable $e): void
-  {
-    if (!$this->isIgnoreReport($e)) {
-      $data = [
-        'code' => $e->getCode(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine(),
-        'trace' => $e->getTrace(),
-      ];
-      if (method_exists($e, 'logLevel')) {
-        $level = $e->logLevel();
-      } elseif (property_exists($e, 'logLevel')) {
-        $level = $e->logLevel;
-      }
-      if (!isset($level)) $level = 'error';
-      // 记录异常到日志
-      $this->app->log->log($level, $e->getMessage(), $data);
-    }
-  }
-
-  /**
-   * 判断是否被忽视不写入日志
-   * @param Throwable $exception
-   * @return bool
-   */
-  protected function isIgnoreReport(Throwable $exception): bool
-  {
-    foreach ($this->ignoreReport as $class) {
-      if ($exception instanceof $class) {
-        return true;
-      }
-    }
-    return false;
   }
 }
