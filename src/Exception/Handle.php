@@ -17,6 +17,7 @@ namespace ViSwoole\HttpServer\Exception;
 
 use Throwable;
 use ViSwoole\Core\App;
+use ViSwoole\Core\Exception\RouteNotFoundException;
 use ViSwoole\Core\Exception\ValidateException;
 use ViSwoole\HttpServer\Response;
 use ViSwoole\HttpServer\Status;
@@ -46,6 +47,8 @@ class Handle extends \ViSwoole\Core\Exception\Handle
     if ($e instanceof HttpException) {
       $statusCode = $e->getHttpCode();
       $this->response->setHeader($e->getHeaders());
+    } elseif ($e instanceof RouteNotFoundException) {
+      $statusCode = Status::NOT_FOUND;
     } elseif ($e instanceof ValidateException) {
       $statusCode = Status::BAD_REQUEST;
     } elseif ($this->app->isDebug()) {
