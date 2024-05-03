@@ -30,7 +30,7 @@ class EventHandle
   public static function onRequest(
     Request  $request,
     Response $response
-  ): bool
+  ): void
   {
     try {
       $psr7Request = \ViSwoole\HttpServer\Request::create($request);
@@ -53,16 +53,16 @@ class EventHandle
         }, $middleware);
       }
       if ($result instanceof ResponseInterface) {
-        return $result->send();
+        $result->send();
       } elseif (is_array($result) | is_object($result)) {
         // 返回的不是response对象 则对返回的参数进行json格式化。
-        return $psr7Response->json($result)->send();
+        $psr7Response->json($result)->send();
       } else {
-        return $psr7Response->send((string)$result);
+        $psr7Response->send((string)$result);
       }
     } catch (Throwable $e) {
       $exceptionHandle = Server::getConfig()['exception_handle'];
-      return App::invokeMethod([$exceptionHandle, 'render'], [$e]);
+      App::invokeMethod([$exceptionHandle, 'render'], [$e]);
     }
   }
 }
