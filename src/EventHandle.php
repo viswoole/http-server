@@ -33,8 +33,8 @@ class EventHandle
   ): void
   {
     try {
-      $psr7Request = \ViSwoole\HttpServer\Request::create($request);
-      $psr7Response = \ViSwoole\HttpServer\Response::create($response);
+      $psr7Request = \ViSwoole\HttpServer\Request::proxySwooleRequest($request);
+      $psr7Response = \ViSwoole\HttpServer\Response::proxySwooleResponse($response);
       $params = array_merge($psr7Request->get(default: []), $psr7Request->post(default: []));
       // 匹配路由
       $route = Router::collector()->matchRoute(

@@ -103,6 +103,27 @@ class Response implements ResponseInterface
   }
 
   /**
+   * 代理Swoole\Http\Response
+   *
+   * @param swooleResponse $response
+   * @return ResponseInterface
+   */
+  public static function proxySwooleResponse(swooleResponse $response): ResponseInterface
+  {
+    $instance = Context::get(__CLASS__, null, Coroutine::getTopId() ?: null);
+    if (is_null($instance)) {
+      if (class_exists('\App\Response')) {
+        $requestClass = \App\Response::class;
+      } else {
+        $requestClass = Response::class;
+      }
+      $instance = new $requestClass($response);
+      Context::set(__CLASS__, $instance, Coroutine::getTopId() ?: null);
+    }
+    return $instance;
+  }
+
+  /**
    * 返回具有指定的 HTTP 协议版本的实例。
    *
    * @param string $version HTTP 版本号（例如，"1.1"，"1.0"）。
@@ -342,27 +363,6 @@ class Response implements ResponseInterface
       $this->stream = FileStream::create('php://memory', 'r+');
     }
     return $this->stream;
-  }
-
-  /**
-   * 创建响应对象（该方法由框架内部调用，在接收到request事件时会自动调用该方法对swooleRequest进行代理）
-   *
-   * @param swooleResponse $response
-   * @return ResponseInterface
-   */
-  public static function create(swooleResponse $response): ResponseInterface
-  {
-    $instance = Context::get(__CLASS__, null, Coroutine::getTopId() ?: null);
-    if (is_null($instance)) {
-      if (class_exists('\App\Response')) {
-        $requestClass = \App\Response::class;
-      } else {
-        $requestClass = Response::class;
-      }
-      $instance = new $requestClass($response);
-      Context::set(__CLASS__, $instance, Coroutine::getTopId() ?: null);
-    }
-    return $instance;
   }
 
   /**

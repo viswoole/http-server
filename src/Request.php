@@ -97,6 +97,38 @@ class Request implements RequestInterface
   }
 
   /**
+   * 代理Swoole\Http\Request
+   *
+   * @access public
+   * @param swooleRequest $request
+   * @return Request 如果已经创建过，直接返回请求对象
+   */
+  public static function proxySwooleRequest(swooleRequest $request): static
+  {
+    $instance = Context::get(__CLASS__, null, Coroutine::getTopId() ?: null);
+    if (is_null($instance)) {
+      $contentType = $request->header['content-type'] ?? null;
+      if ($contentType === 'application/json') {
+        // 获取原始请求内容
+        $rawContent = $request->rawContent();
+        // 解析JSON数据
+        $postData = json_decode($rawContent, true);
+        // 将解析后的数据设置到 $request->post
+        $request->post = $postData;
+      }
+      //接管swoole源Request对象
+      if (class_exists('\App\Request')) {
+        $requestClass = \App\Request::class;
+      } else {
+        $requestClass = Request::class;
+      }
+      $instance = new $requestClass($request);
+      Context::set(__CLASS__, $instance, Coroutine::getTopId() ?: null);
+    }
+    return $instance;
+  }
+
+  /**
    * 当前是否JSON请求
    * @access public
    * @return bool
@@ -556,38 +588,6 @@ class Request implements RequestInterface
       $this->uri = Uri::create($this);
     }
     return $this->uri;
-  }
-
-  /**
-   * 创建request对象
-   *
-   * @access public
-   * @param swooleRequest $request
-   * @return Request 如果已经创建过，直接返回请求对象
-   */
-  public static function create(swooleRequest $request): static
-  {
-    $instance = Context::get(__CLASS__, null, Coroutine::getTopId() ?: null);
-    if (is_null($instance)) {
-      $contentType = $request->header['content-type'] ?? null;
-      if ($contentType === 'application/json') {
-        // 获取原始请求内容
-        $rawContent = $request->rawContent();
-        // 解析JSON数据
-        $postData = json_decode($rawContent, true);
-        // 将解析后的数据设置到 $request->post
-        $request->post = $postData;
-      }
-      //接管swoole源Request对象
-      if (class_exists('\App\Request')) {
-        $requestClass = \App\Request::class;
-      } else {
-        $requestClass = Request::class;
-      }
-      $instance = new $requestClass($request);
-      Context::set(__CLASS__, $instance, Coroutine::getTopId() ?: null);
-    }
-    return $instance;
   }
 
   /**
