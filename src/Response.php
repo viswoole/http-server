@@ -50,7 +50,7 @@ class Response implements ResponseInterface
   /**
    * @var string 协议版本
    */
-  protected string $protocolVersion;
+  protected string $protocolVersion = '1.1';
   /**
    * @var string 状态描述短语
    */
@@ -79,27 +79,6 @@ class Response implements ResponseInterface
   public function __construct(swooleResponse $response)
   {
     $this->swooleResponse = $response;
-    $this->protocolVersion = Request::getProtocolVersion();
-  }
-
-  /**
-   * 检索 HTTP 协议版本号作为字符串。
-   *
-   * @return string HTTP 版本号（例如，"1.1"，"1.0"）。
-   */
-  #[Override] public function getProtocolVersion(): string
-  {
-    return $this->protocolVersion;
-  }
-
-  /**
-   * 自定义实例化
-   *
-   * @return ResponseInterface
-   */
-  public static function __make(): ResponseInterface
-  {
-    return Context::get(__CLASS__, Coroutine::getTopId() ?: null);
   }
 
   /**
@@ -121,6 +100,16 @@ class Response implements ResponseInterface
       Context::set(__CLASS__, $instance, Coroutine::getTopId() ?: null);
     }
     return $instance;
+  }
+
+  /**
+   * 检索 HTTP 协议版本号作为字符串。
+   *
+   * @return string HTTP 版本号（例如，"1.1"，"1.0"）。
+   */
+  #[Override] public function getProtocolVersion(): string
+  {
+    return $this->protocolVersion;
   }
 
   /**
@@ -363,6 +352,26 @@ class Response implements ResponseInterface
       $this->stream = FileStream::create('php://memory', 'r+');
     }
     return $this->stream;
+  }
+
+  /**
+   * 创建新响应实例(等同于克隆)
+   *
+   * @return ResponseInterface
+   */
+  public static function create(): ResponseInterface
+  {
+    return clone self::__make();
+  }
+
+  /**
+   * 自定义实例化
+   *
+   * @return ResponseInterface
+   */
+  public static function __make(): ResponseInterface
+  {
+    return Context::get(__CLASS__, Coroutine::getTopId() ?: null);
   }
 
   /**
