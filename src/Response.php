@@ -32,9 +32,12 @@ use ViSwoole\HttpServer\Message\FileStream;
  * HTTP响应类
  *
  * 实现了\Psr\Http\Message\ResponseInterface接口，但with开头方法未遵循其不破坏原对象的原则。
+ *
  * 该类封装了Swoole\Http\Response类，并提供了一些额外的方法。
+ *
  * 如果想要调用Swoole\Http\Response类中的方法，实现更多功能，
  * 可调用Response::getSwooleResponse()方法获取原始的Swoole\Http\Response对象。
+ *
  * 该类还实现了__call()魔术方法，如果调用的方法不存在于该类则会判断是否为Swoole\Http\Response对象的方法。
  * @link https://wiki.swoole.com/#/http_server?id=swoolehttpresponse
  */
@@ -249,7 +252,7 @@ class Response implements ResponseInterface
    * 发送响应(当request进程结束时会自动调用该方法)
    *
    * @access public
-   * @param string|null $content
+   * @param string|null $content 响应内容，如果为空则从body中获取
    * @return bool
    */
   #[Override] public function send(?string $content = null): bool
@@ -416,32 +419,6 @@ class Response implements ResponseInterface
   /**
    * @inheritDoc
    */
-  #[Override] public function error(
-    string                 $errMsg = 'error',
-    int                    $errCode = -1,
-    array|JsonSerializable $data = null
-  ): ResponseInterface
-  {
-    return $this->unifiedJson($errMsg, $errCode, $data, 200);
-  }
-
-  /**
-   * @inheritDoc
-   */
-  #[Override] public function unifiedJson(
-    string                      $errMsg,
-    int                         $errCode,
-    array|JsonSerializable|null $data,
-    int                         $statusCode
-  ): ResponseInterface
-  {
-    $this->json(compact('errCode', 'errMsg', 'data'), $statusCode);
-    return $this;
-  }
-
-  /**
-   * @inheritDoc
-   */
   #[Override] public function json(
     JsonSerializable|array $data,
     int                    $statusCode = 200
@@ -520,30 +497,6 @@ class Response implements ResponseInterface
   {
     $this->echoToConsole = $echo;
     return $this;
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public function exception(
-    string                 $errMsg = '系统内部异常',
-    int                    $errCode = 500,
-    int                    $statusCode = 500,
-    array|JsonSerializable $errTrace = null
-  ): ResponseInterface
-  {
-    return $this->unifiedJson($errMsg, $errCode, $errTrace, $statusCode);
-  }
-
-  /**
-   * @inheritDoc
-   */
-  #[Override] public function success(
-    string                 $errMsg = 'success',
-    array|JsonSerializable $data = null
-  ): ResponseInterface
-  {
-    return $this->unifiedJson($errMsg, 0, $data, 200);
   }
 
   /**
