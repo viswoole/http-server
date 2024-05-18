@@ -115,7 +115,7 @@ class Response implements ResponseInterface
   }
 
   /**
-   * 检索所有消息头的值。
+   * 获取所有响应标头。
    *
    * 该方法返回所有标头和值的字符串，这些值使用逗号拼接在一起。
    *
@@ -128,9 +128,11 @@ class Response implements ResponseInterface
   }
 
   /**
-   * 检索所有消息头的值。
+   * 获取所有响应标头。
    *
-   * @return string[][] 返回消息标头的关联数组。
+   * 该方法返回所有标头和值，值为数组形式。
+   *
+   * @return array<string,string[]> 返回消息标头的关联数组。
    */
   #[Override] public function getHeaders(): array
   {
@@ -403,7 +405,7 @@ class Response implements ResponseInterface
    * 虽然标头名称不区分大小写，但此函数会保留标头的大小写，并从 getHeaders() 返回。
    *
    * @param string $name 不区分大小写的标头字段名称，自动格式化为合法标头。
-   * @param string|string[] $value 标头值（们）。
+   * @param string|string[] $value 标头值。
    * @return ResponseInterface
    * @throws InvalidArgumentException 对于无效的标头名称或值。
    */
