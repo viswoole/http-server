@@ -189,4 +189,20 @@ interface ResponseInterface extends \Psr\Http\Message\ResponseInterface
     string $samesite = '',
     string $priority = ''
   ): bool;
+
+  /**
+   * 异常接管
+   *
+   * @param string $errMsg
+   * @param int $errCode
+   * @param int $statusCode
+   * @param array|JsonSerializable|null $errTrace
+   * @return ResponseInterface
+   */
+  public function exception(
+    string                 $errMsg = '系统内部异常',
+    int                    $errCode = 500,
+    int                    $statusCode = 500,
+    array|JsonSerializable $errTrace = null
+  ): ResponseInterface;
 }

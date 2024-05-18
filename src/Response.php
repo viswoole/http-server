@@ -430,6 +430,19 @@ class Response implements ResponseInterface
   /**
    * @inheritDoc
    */
+  #[Override] public function exception(
+    string                 $errMsg = '系统内部异常',
+    int                    $errCode = 500,
+    int                    $statusCode = 500,
+    array|JsonSerializable $errTrace = null
+  ): ResponseInterface
+  {
+    return $this->json(compact('errMsg', 'errCode', 'errTrace'), $statusCode);
+  }
+
+  /**
+   * @inheritDoc
+   */
   #[Override] public function json(
     JsonSerializable|array $data,
     int                    $statusCode = 200
