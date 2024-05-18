@@ -42,15 +42,12 @@ use ViSwoole\HttpServer\Contract\ResponseInterface;
  * @method static bool send(?string $content = null) 发送响应(当request进程结束时会自动调用该方法)
  * @method static StreamInterface getBody() 获取消息的主体。
  * @method static ResponseInterface withHeader(string $name, mixed $value) 返回一个具有指定值，替换指定标头的实例。
- * @method static ResponseInterface error(string $errMsg = 'error', int $errCode = -1, JsonSerializable|array|null $data = null) 错误响应格式
- * @method static ResponseInterface unifiedJson(string $errMsg, int $errCode, JsonSerializable|array|null $data, int $statusCode) 设置统一的JSON响应格式
  * @method static ResponseInterface json(JsonSerializable|array $data, int $statusCode = 200) 设置JSON格式的响应内容
  * @method static ResponseInterface setContent(string $content) 设置响应内容
  * @method static ResponseInterface setContentType(string $contentType = 'application/json', string $charset = 'utf-8') 设置Content-Type响应头
  * @method static ResponseInterface setMessage(string $content) 设置响应内容
  * @method static ResponseInterface echoConsole(bool $echo = true) 是否将响应回显到控制台
  * @method static ResponseInterface exception(string $errMsg = '系统内部异常', int $errCode = 500, int $statusCode = 500, JsonSerializable|array|null $errTrace = null) 设置异常响应
- * @method static ResponseInterface success(string $errMsg = 'success', JsonSerializable|array|null $data = null) 设置成功响应
  * @method static bool sendfile(string $filePath, int $offset = 0, int $length = 0, ?string $fileMimeType = null) 发送文件
  * @method static ResponseInterface setCode(int $statusCode, string $reasonPhrase = '') 应用状态码
  * @method static ResponseInterface withStatus(int $code, string $reasonPhrase = '') 应用状态码
