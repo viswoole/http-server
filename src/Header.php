@@ -58,7 +58,8 @@ class Header
    * @return array 格式化完毕的标头
    */
   public static function getHeaders(
-    array        $headers, string $valueMode = 'array',
+    array        $headers,
+    string       $valueMode = 'array',
     false|string $nameModel = false
   ): array
   {
