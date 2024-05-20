@@ -385,7 +385,7 @@ class Request implements RequestInterface
   /**
    * 检索标准化的文件上传数据。
    *
-   * @return UploadedFileInterface[] 包含 UploadedFileInterface 实例的树形数组；如果没有数据存在，必须返回空数组。
+   * @return array<string,UploadedFileInterface|UploadedFileInterface[]> 包含 UploadedFileInterface 实例的树形数组；如果没有数据存在，必须返回空数组。
    */
   public function getUploadedFiles(): array
   {
