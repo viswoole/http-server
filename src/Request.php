@@ -25,6 +25,7 @@ use ViSwoole\Core\Coroutine\Context;
 use ViSwoole\Core\Facades\Server;
 use ViSwoole\HttpServer\Contract\RequestInterface;
 use ViSwoole\HttpServer\Message\FileStream;
+use ViSwoole\HttpServer\Message\UploadedFile;
 use ViSwoole\HttpServer\Message\Uri;
 
 /**
@@ -69,6 +70,40 @@ class Request implements RequestInterface
 
   protected function __construct(protected swooleRequest $swooleRequest)
   {
+    if (is_array($swooleRequest->files)) {
+      $swooleRequest->files = $this->parseFiles($swooleRequest->files);
+    }
+  }
+
+  /**
+   * 解析上传文件为UploadedFile实例
+   * @param array $files
+   * @return array
+   */
+  private function parseFiles(array $files): array
+  {
+    $uploadedFiles = [];
+    foreach ($files as $key => $fileInfo) {
+      if (is_array($fileInfo)) {
+        $keys = array_keys($fileInfo);
+        if (array_keys($keys) !== $keys) {
+          $uploadedFiles[$key] = new UploadedFile(...$fileInfo);
+        } else {
+          // 多文件
+          $arr = [];
+          foreach ($fileInfo as $i => $fileItemInfo) {
+            if ($fileItemInfo instanceof UploadedFile) {
+              return $files;
+            }
+            $arr[$i] = new UploadedFile(...$fileItemInfo);
+          }
+          $uploadedFiles[$key] = $arr;
+        }
+      } else {
+        return $files;
+      }
+    }
+    return $uploadedFiles;
   }
 
   /**
