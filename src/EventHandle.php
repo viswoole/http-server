@@ -54,7 +54,7 @@ class EventHandle
       }
       if ($result instanceof ResponseInterface) {
         $result->send();
-      } elseif (is_array($result) | is_object($result)) {
+      } elseif (is_array($result) || is_object($result)) {
         // 返回的不是response对象 则对返回的参数进行json格式化。
         $psr7Response->json($result)->send();
       } else {
