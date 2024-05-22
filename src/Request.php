@@ -222,6 +222,7 @@ class Request implements RequestInterface
         $params[$paramName] = $this->param($paramName, $defaultVal);
       }
     }
+    if ($params === null) return [];
     return $isShowNull ? $params : array_filter($params, function ($value) {
       return !is_null($value);
     });
