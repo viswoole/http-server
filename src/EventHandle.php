@@ -20,9 +20,7 @@ use Swoole\Http\Response;
 use Throwable;
 use ViSwoole\Core\Facades\App;
 use ViSwoole\Core\Facades\Server;
-use ViSwoole\Core\Middleware;
 use ViSwoole\Core\Router;
-use ViSwoole\Core\Router\RouteMiss;
 use ViSwoole\HttpServer\Contract\ResponseInterface;
 
 class EventHandle
@@ -35,23 +33,13 @@ class EventHandle
     try {
       $psr7Request = \ViSwoole\HttpServer\Request::proxySwooleRequest($request);
       $psr7Response = \ViSwoole\HttpServer\Response::proxySwooleResponse($response);
-      $params = array_merge($psr7Request->get(default: []), $psr7Request->post(default: []));
-      // 匹配路由
-      $route = Router::collector()->matchRoute(
+      // 交由路由分发
+      $result = Router::collector()->dispatch(
         $psr7Request->getPath(),
-        $params,
+        $psr7Request->getParams(),
         $psr7Request->getMethod(),
         $psr7Request->getUri()->getHost()
       );
-      if ($route instanceof RouteMiss) {
-        $result = $route->handler();
-      } else {
-        $handle = $route['handler'];
-        $middleware = $route['middleware'];
-        $result = Middleware::process(function () use ($handle, $params) {
-          return App::invoke($handle, $params);
-        }, $middleware);
-      }
       if ($result instanceof ResponseInterface) {
         $result->send();
       } elseif (is_array($result) || is_object($result)) {
